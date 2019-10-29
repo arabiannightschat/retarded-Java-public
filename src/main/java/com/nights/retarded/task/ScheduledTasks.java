@@ -1,5 +1,6 @@
 package com.nights.retarded.task;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +39,8 @@ public class ScheduledTasks {
     		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     		crazyDaily.setDt(sdf.parse(sdf.format(today)));
     		crazyDaily.setCrazyId(yesterdayDaily.getCrazyId());
-    		double dayStart = yesterdayDaily.getDayEnd() + dailyLimit;
+            BigDecimal dayStartDecimal = BigDecimal.valueOf(yesterdayDaily.getDayEnd()).add(BigDecimal.valueOf(dailyLimit));
+    		double dayStart = dayStartDecimal.doubleValue();
     		double dayEnd = dayStart;
     		double daySettle = 0;
     		crazyDaily.setDayStart(dayStart);
