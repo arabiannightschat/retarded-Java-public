@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.annotation.Resource;
 
+import com.nights.retarded.sys.model.User;
 import org.springframework.stereotype.Service;
 
 import com.nights.retarded.sys.dao.LoginRecordDao;
@@ -31,7 +32,11 @@ public class LoginRecordServiceImpl implements LoginRecordService{
 
 	@Override
 	public boolean isFirstLogin(String openId) {
-		if(loginRecordDao.getOpenIdCount(openId) > 0 && this.userDao.findByOpenId(openId) != null) { 
+	    User user = userDao.findByOpenId(openId);
+        if(loginRecordDao.getOpenIdCount(openId) > 0 && user != null) {
+		    user.setLoginCount(user.getLoginCount() + 1);
+		    user.setLastLoginTime(new Date());
+		    userDao.save(user);
 			return false;
 		}else {
 			return true;

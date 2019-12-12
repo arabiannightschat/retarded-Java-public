@@ -1,6 +1,7 @@
 package com.nights.retarded.sys.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -71,7 +72,42 @@ public class User implements Serializable{
     @Column(name="rem")
     private String rem;
 
-	public String getOpenId() {
+    /* 创建时间 */
+    @Column(name="create_time")
+    private Date createTime;
+
+    /* 最近一次后台登录时间 */
+    @Column(name="last_login_time")
+    private Date lastLoginTime;
+
+    @Column(name="login_count")
+    private Integer loginCount;
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    public Integer getLoginCount() {
+        return loginCount;
+    }
+
+    public void setLoginCount(Integer loginCount) {
+        this.loginCount = loginCount;
+    }
+
+    public String getOpenId() {
 		return openId;
 	}
 

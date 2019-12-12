@@ -6,6 +6,9 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import com.nights.retarded.sys.service.UserService;
+import com.nights.retarded.sys.service.impl.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,8 +29,11 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="登录")
 public class LoginController {
 	
-	@Resource(name = "loginRecordService")
+	@Autowired
 	private LoginRecordService loginRecordService;
+
+	@Autowired
+    private UserService userService;
 	
 	/*
 	 * wxOpenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openid":"opxLy5I39n4oZyPg_CUysPgemVec"}
