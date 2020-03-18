@@ -6,21 +6,22 @@ public interface UserService {
 	
 	/**
 	 * 获取用户信息
-	 * @param openId 
-	 * @return
 	 */
-	public User findByOpenId(String openId);
+	User findByOpenId(String openId);
 
-	/**
-	 * 一个新用户，默认外观
-	 * @param openId
-	 * @param style 
-	 */
-	public void recordUI(String openId, String style);
-	
+
 	/**
 	 * 追加用户信息
 	 */
-	public void addUserInfo(String openId, String userInfo);
+	void addUserInfo(String openId, String userInfo);
 
+	/**
+	 * 新用户
+	 */
+	void createUser(String openId);
+
+	/**
+	 * 追加登录信息
+	 */
+	void appendLoginInfo(String openId);
 }

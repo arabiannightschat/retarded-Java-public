@@ -29,17 +29,4 @@ public class LoginRecordServiceImpl implements LoginRecordService{
 		loginRecordDao.save(loginRecord);
 	}
 
-
-	@Override
-	public boolean isFirstLogin(String openId) {
-	    User user = userDao.findByOpenId(openId);
-        if(loginRecordDao.getOpenIdCount(openId) > 0 && user != null) {
-		    user.setLoginCount(user.getLoginCount() + 1);
-		    user.setLastLoginTime(new Date());
-		    userDao.save(user);
-			return false;
-		}else {
-			return true;
-		}
-	}
 }
