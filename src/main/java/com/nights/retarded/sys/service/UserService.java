@@ -23,5 +23,5 @@ public interface UserService {
 	/**
 	 * 追加登录信息
 	 */
-	void appendLoginInfo(String openId);
+	void countLoginInfo(String openId);
 }

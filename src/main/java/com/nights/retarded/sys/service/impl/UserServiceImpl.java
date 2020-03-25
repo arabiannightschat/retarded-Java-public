@@ -43,13 +43,15 @@ public class UserServiceImpl implements UserService{
 		user.setCreateTime(new Date());
 		user.setLastLoginTime(new Date());
 		user.setLoginCount(1);
+		userDao.save(user);
 	}
 
 	@Override
-	public void appendLoginInfo(String openId) {
+	public void countLoginInfo(String openId) {
 		User user = userDao.findByOpenId(openId);
 		user.setLoginCount(user.getLoginCount() + 1);
 		user.setLastLoginTime(new Date());
+		userDao.save(user);
 	}
 
 

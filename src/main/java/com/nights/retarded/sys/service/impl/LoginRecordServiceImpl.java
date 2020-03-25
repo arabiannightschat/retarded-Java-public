@@ -18,9 +18,6 @@ public class LoginRecordServiceImpl implements LoginRecordService{
 	@Resource(name = "loginRecordDao")
 	private LoginRecordDao loginRecordDao;
 
-	@Resource(name = "userDao")
-	private UserDao userDao;
-
 	@Override
 	public void addLoginRecord(String openId) {
 		LoginRecord loginRecord = new LoginRecord();

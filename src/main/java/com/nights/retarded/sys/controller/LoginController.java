@@ -1,16 +1,11 @@
 package com.nights.retarded.sys.controller;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-
 import com.nights.retarded.records.service.RecordsTypeService;
-import com.nights.retarded.sys.model.User;
 import com.nights.retarded.sys.service.UserService;
-import com.nights.retarded.sys.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +20,6 @@ import com.nights.retarded.sys.service.LoginRecordService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping("api/login")
@@ -74,12 +68,12 @@ public class LoginController {
                 // 创建用户
                 userService.createUser(openId);
             } else {
-                userService.appendLoginInfo(openId);
+                userService.countLoginInfo(openId);
             }
 
         } else {
             openId = JsonUtils.toOpenId(RedisUtils.get(oldSessionId));
-            userService.appendLoginInfo(openId);
+            userService.countLoginInfo(openId);
             sessionId = oldSessionId;
         }
 
