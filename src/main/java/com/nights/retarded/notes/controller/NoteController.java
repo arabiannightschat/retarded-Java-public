@@ -31,7 +31,7 @@ public class NoteController extends BaseController {
         return objectToJson(noteService.createNote(getOpenId(), monthBudget));
     }
 
-    @GetMapping("getCurrNoteId")
+    @GetMapping("getCurrNote")
     public String getCurrNote(){
 	    return objectToJson(noteService.getCurrNote(getOpenId()));
     }
