@@ -1,22 +1,27 @@
 package com.nights.retarded.sys.service.impl;
 
-import java.util.Date;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Service;
-
+import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.sys.dao.UserDao;
+import com.nights.retarded.sys.model.LoginRecord;
 import com.nights.retarded.sys.model.User;
+import com.nights.retarded.sys.service.LoginRecordService;
 import com.nights.retarded.sys.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
 
 @Service("userService")
 public class UserServiceImpl implements UserService{
 	
 	@Resource(name = "userDao")
 	private UserDao userDao;
+
+	@Autowired
+	private LoginRecordService loginRecordService;
 	
 	@Override
 	public User findByOpenId(String openId) {
@@ -28,8 +33,7 @@ public class UserServiceImpl implements UserService{
 	public void addUserInfo(String openId, String userInfo) {
 		User user = JsonUtils.jsonToClass(userInfo, User.class);
 		User dbUser = userDao.findByOpenId(openId);
-		user.setRem(dbUser.getRem());
-		user.setCreateTime(dbUser.getCreateTime());
+		user.setCreateDt(dbUser.getCreateDt());
 		user.setLastLoginTime(dbUser.getLastLoginTime());
 		user.setLoginCount(dbUser.getLoginCount());
 		user.setOpenId(openId);
@@ -40,9 +44,10 @@ public class UserServiceImpl implements UserService{
 	public void createUser(String openId) {
 		User user = new User();
 		user.setOpenId(openId);
-		user.setCreateTime(new Date());
+		user.setCreateDt(new Date());
 		user.setLastLoginTime(new Date());
 		user.setLoginCount(1);
+		user.setChargeDayCount(1);
 		userDao.save(user);
 	}
 
@@ -51,6 +56,12 @@ public class UserServiceImpl implements UserService{
 		User user = userDao.findByOpenId(openId);
 		user.setLoginCount(user.getLoginCount() + 1);
 		user.setLastLoginTime(new Date());
+		// 如果是今日首次登陆，则记账天数统计 + 1
+		Date dt = DateUtils.toDaySdf(new Date());
+		List<LoginRecord> list = loginRecordService.findByOpenIdAndDtAfter(openId, dt);
+		if(list == null || list.size() == 0) {
+			user.setChargeDayCount(user.getChargeDayCount() + 1);
+		}
 		userDao.save(user);
 	}
 

@@ -1,6 +1,7 @@
 package com.nights.retarded.sys.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Resource;
 
@@ -24,6 +25,11 @@ public class LoginRecordServiceImpl implements LoginRecordService{
 		loginRecord.setDt(new Date());
 		loginRecord.setOpenId(openId);
 		loginRecordDao.save(loginRecord);
+	}
+
+	@Override
+	public List<LoginRecord> findByOpenIdAndDtAfter(String openId, Date dt) {
+		return loginRecordDao.findByOpenIdAndDtAfter(openId, dt);
 	}
 
 }

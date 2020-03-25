@@ -13,6 +13,8 @@ import com.nights.retarded.notes.service.DayStatisticsService;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping("api/notes/dayStatistics")
 public class DayStatisticsController extends BaseController {
@@ -27,7 +29,7 @@ public class DayStatisticsController extends BaseController {
 	}
 
 	@GetMapping("getRecentData")
-    public String getRecentData(){
+    public String getRecentData() {
         return objectToJson(dayStatisticsService.getRecentData(getOpenId()));
     }
 

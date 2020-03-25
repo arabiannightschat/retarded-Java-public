@@ -72,6 +72,7 @@ public class LoginController {
 		
 		HashMap<String,Object> result = new HashMap<>();
 		result.put("sessionId", sessionId);
+		result.put("chargeDayCount",userService.findByOpenId(openId).getChargeDayCount());
 		return JsonUtils.mapToJson(result);
 	}
 	

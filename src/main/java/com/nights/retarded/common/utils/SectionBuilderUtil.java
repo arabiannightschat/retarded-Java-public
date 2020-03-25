@@ -310,13 +310,11 @@ public class SectionBuilderUtil {
 		
 		// 1.创建结构文件夹
 		
-		newSection("records");
+		newSection("xx");
 		
 		// 2.第一个参数标识要放进的section，第二个参数标识数据库表名，第三个参数标识生成的bean名
 		
-		newTable("records","records_record","record");
-        newTable("records","records_type","records_type");
-        newTable("records","records_user_type","records_user_type");
+		newTable("xx","sys_user","user");
 
 		// 2.可以用这一种方式标识数据库表名=bean名
 		

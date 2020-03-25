@@ -1,12 +1,15 @@
 package com.nights.retarded.notes.service.impl;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
+import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +36,14 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
     public Map getRecentData(String openId) {
         Note note = noteService.getCurrNote(openId);
         Date now = new Date();
+        now = DateUtils.toDaySdf(now);
         Date startTime = DateUtils.addDay(now, -5);
-        return null;
+        List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtBetween(note.getNoteId(), now, startTime);
+        Map<String, Object> map = new HashMap<>();
+        map.put("balance", note.getBalance());
+        map.put("dayToNextMonth",DateUtils.dayToNextMonth(new Date()));
+        map.put("list", list);
+        return map;
     }
 
 

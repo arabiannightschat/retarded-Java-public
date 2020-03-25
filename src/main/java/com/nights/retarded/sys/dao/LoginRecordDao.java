@@ -6,9 +6,10 @@ import org.springframework.data.jpa.repository.Query;
 import com.nights.retarded.sys.model.LoginRecord;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
+import java.util.List;
+
 public interface LoginRecordDao extends JpaRepository<LoginRecord,String>{
 
-	@Query("select count(lr) from LoginRecord lr where lr.openId = :openId")
-	public int getOpenIdCount(@Param("openId") String openId);
-	
+    List<LoginRecord> findByOpenIdAndDtAfter(String openId, Date dt);
 }
