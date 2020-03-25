@@ -3,6 +3,7 @@ package com.nights.retarded.common.utils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,9 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonUtils {
 	
 	private static ObjectMapper json = new ObjectMapper();
+
+    static {
+        json.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+    }
 	
 	/**
-	 * 参数为String型的wxopenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openId":"opxLy5I39n4oZyPg_CUysPgemVec"}
+	 * 参数为 String 型的 wxopenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openId":"opxLy5I39n4oZyPg_CUysPgemVec"}
 	 * @return openId
 	 * @throws Exception 
 	 */

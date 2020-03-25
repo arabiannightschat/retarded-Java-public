@@ -1,36 +1,30 @@
 package com.nights.retarded.sys.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import com.nights.retarded.records.service.RecordsTypeService;
+import com.nights.retarded.common.utils.HttpUtil;
+import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.common.utils.RedisUtils;
+import com.nights.retarded.sys.model.enums.WxUrl;
+import com.nights.retarded.sys.service.LoginRecordService;
 import com.nights.retarded.sys.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nights.retarded.common.utils.HttpUtil;
-import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.common.utils.RedisUtils;
-import com.nights.retarded.sys.model.enums.WxUrl;
-import com.nights.retarded.sys.service.LoginRecordService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("api/login")
+@RequestMapping("api/sys/login")
 @Api(value="登录")
 public class LoginController {
 	
 	@Autowired
 	private LoginRecordService loginRecordService;
-
-	@Autowired
-	private RecordsTypeService recordsTypeService;
 
 	@Autowired
     private UserService userService;
@@ -63,8 +57,6 @@ public class LoginController {
 
             // 如果是第一次登录
             if(userService.findByOpenId(openId) == null){
-                // 写入初始类型
-                recordsTypeService.addAlternative2User(openId);
                 // 创建用户
                 userService.createUser(openId);
             } else {

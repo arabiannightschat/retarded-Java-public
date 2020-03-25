@@ -12,8 +12,8 @@ import com.nights.retarded.sys.service.FeedbackService;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("api/sys")
-public class SysController {
+@RequestMapping("api/sys/feedback")
+public class FeedbackController {
 
 	@Resource(name="feedbackService")
 	private FeedbackService feedbackService;
@@ -22,7 +22,6 @@ public class SysController {
 	@RequestMapping(value = "receiveFeedback", method = RequestMethod.GET)
 	public void receiveFeedback(HttpServletRequest request,String content,String wechatId) {
 		String openId = JsonUtils.requestToOpenId(request);
-//		String openId = "opxLy5I39n4oZyPg_CUysPgemVec";
 		feedbackService.receiveFeedback(openId,content,wechatId);
 	}
 }

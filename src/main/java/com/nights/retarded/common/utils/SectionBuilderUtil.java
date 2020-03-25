@@ -46,7 +46,7 @@ public class SectionBuilderUtil {
 		bw.write("\n");bw.write("import com.nights.retarded." + sectionName + ".service." + firstUpper + "Service;");
 		bw.write("\n\n");bw.write("import io.swagger.annotations.ApiOperation;");
 		bw.write("\n\n");bw.write("@RestController");
-		bw.write("\n");bw.write("@RequestMapping(\"api/" + sectionName + "\")");
+		bw.write("\n");bw.write("@RequestMapping(\"api/" + sectionName + "/" + secondUpper + "\")");
 		bw.write("\n");bw.write("public class " + firstUpper + "Controller {");
 		bw.write("\n\n\t");bw.write("@Resource(name=\"" + secondUpper + "Service\")");
 		bw.write("\n\t");bw.write("private " + firstUpper + "Service " + secondUpper + "Service;");
@@ -126,6 +126,7 @@ public class SectionBuilderUtil {
 		ResultSetMetaData rsmd = stmt.getMetaData();
 		// 是否存在时间类型，辅助决定import
 		boolean isExistDate = false;
+        boolean isExistBigDecimal = false;
 		// 是否存在openId，辅助决定import
 		boolean isExistOpenId = false;
 		System.out.print("[info] ");
@@ -139,6 +140,9 @@ public class SectionBuilderUtil {
 			if(rsmd.getColumnType(i + 1) == 93) {
 				isExistDate = true;
 			}
+			if(rsmd.getColumnType(i + 1) == 3){
+                isExistBigDecimal = true;
+            }
 			System.out.print(rsmd.getColumnName(i + 1) + " : " + rsmd.getColumnType(i + 1) + " : " + rsmd.getColumnTypeName(i + 1) + " ; ");
 			temp.put("isPrimaryKey", false);
 			list.add(temp);
@@ -163,6 +167,9 @@ public class SectionBuilderUtil {
 		if(isExistDate) {
 			bw.write("\n");bw.write("import java.util.Date;");
 		}
+		if(isExistBigDecimal){
+            bw.write("\n");bw.write("import java.math.BigDecimal;");
+        }
 		bw.write("\n\n");bw.write("import javax.persistence.Column;");
 		bw.write("\n");bw.write("import javax.persistence.Entity;");
 		bw.write("\n");bw.write("import javax.persistence.GeneratedValue;");
@@ -211,7 +218,7 @@ public class SectionBuilderUtil {
 				bw.write(secondUpperUtil((String)map.get("columnName")) + ";");
 			}
 		}
-		// 开始生成GETSET方法
+		// 开始生成GET/SET方法
 		for (Map<String, Object> map : list) {
 			String first =  firstUpperUtil((String)map.get("columnName"));
 			String second =  secondUpperUtil((String)map.get("columnName"));
@@ -229,7 +236,7 @@ public class SectionBuilderUtil {
 		
 	}
 	
-	// 类型转字符串 12 CARCHAR 4 INT 93 DATETIME 其他类型没用到没写适配
+	// 类型转字符串 12 VARCHAR 4 INT 93 DATETIME 其他类型没用到没写适配
 	private static String type2String(int type) {
 		if(type == 12) { 
 			return "String";
@@ -239,7 +246,9 @@ public class SectionBuilderUtil {
 			return "Date";
 		} else if(type == 8) {
 			return "Double";
-		} else {
+		} else if(type == 3) {
+            return "BigDecimal";
+        } else {
 			return "Object";
 		}
 	}
@@ -270,55 +279,51 @@ public class SectionBuilderUtil {
 		// 首字母大写
 		String firstUpper = firstUpperUtil(tablesName);
 		String secondUpper = secondUpperUtil(tablesName);
-		
-		try {
-			newController(sectionName,tablesName,firstUpper,secondUpper);
-			newService(sectionName,tablesName,firstUpper,secondUpper);
-			newDao(sectionName,tablesName,firstUpper,secondUpper);
-			newModel(sectionName,tablesName,firstUpper,secondUpper);
-			System.out.println("------------------------------------------------------------------");
-			System.out.println("[info] 创建成功 " + firstUpper);
-			System.out.println("------------------------------------------------------------------");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private static void newTable(String sectionName,String tablesName,String className) {
+
+        newTable(sectionName, tablesName, firstUpper, secondUpper);
+    }
+
+    private static void newTable(String sectionName, String tablesName, String firstUpper, String secondUpper) {
+        try {
+            newController(sectionName, tablesName, firstUpper, secondUpper);
+            newService(sectionName, tablesName, firstUpper, secondUpper);
+            newDao(sectionName, tablesName, firstUpper, secondUpper);
+            newModel(sectionName, tablesName, firstUpper, secondUpper);
+            System.out.println("------------------------------------------------------------------");
+            System.out.println("[info] 创建成功 " + firstUpper);
+            System.out.println("------------------------------------------------------------------");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void newTable(String sectionName,String tablesName,String className) {
 		
 		// 首字母大写
 		String firstUpper = firstUpperUtil(className);
 		String secondUpper = secondUpperUtil(className);
-		
-		try {
-			newController(sectionName,tablesName,firstUpper,secondUpper);
-			newService(sectionName,tablesName,firstUpper,secondUpper);
-			newDao(sectionName,tablesName,firstUpper,secondUpper);
-			newModel(sectionName,tablesName,firstUpper,secondUpper);
-			System.out.println("------------------------------------------------------------------");
-			System.out.println("[info] 创建成功 " + firstUpper);
-			System.out.println("------------------------------------------------------------------");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+
+        newTable(sectionName, tablesName, firstUpper, secondUpper);
+    }
 	
-//	public static void main(String[] args) {
+	public static void main(String[] args) {
 		
 		// 1.创建结构文件夹
 		
-//		newSection("statistics");
+		newSection("records");
 		
 		// 2.第一个参数标识要放进的section，第二个参数标识数据库表名，第三个参数标识生成的bean名
 		
-//		newTable("statistics","statistics_crazy_daily","crazy_daily");
-//		newTable("sys","sys_feedback","feedback");
-		
+		newTable("records","records_record","record");
+        newTable("records","records_type","records_type");
+        newTable("records","records_user_type","records_user_type");
+
 		// 2.可以用这一种方式标识数据库表名=bean名
 		
-//		newTable("records","records_user");
+//		newTable("notes","records_record");
+
 		
-//	}
+	}
 	
 	
 }
