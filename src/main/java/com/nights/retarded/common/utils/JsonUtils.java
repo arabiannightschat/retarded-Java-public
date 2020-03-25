@@ -1,9 +1,6 @@
 package com.nights.retarded.common.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -108,5 +105,12 @@ public class JsonUtils {
 		String openId = JsonUtils.toOpenId(wxopenId);
 		return openId;
 	}
+
+	public static <T> T getIndexZero (List<T> list){
+        if(list != null && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
 	
 }

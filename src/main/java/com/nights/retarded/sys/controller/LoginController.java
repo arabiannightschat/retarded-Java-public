@@ -29,8 +29,6 @@ public class LoginController {
 	@Autowired
     private UserService userService;
 
-
-
 	/*
 	 * wxOpenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openid":"opxLy5I39n4oZyPg_CUysPgemVec"}
 	 *
@@ -69,7 +67,6 @@ public class LoginController {
             sessionId = oldSessionId;
         }
 
-
 		// 记录登录记录
 		loginRecordService.addLoginRecord(openId);
 		
@@ -77,7 +74,5 @@ public class LoginController {
 		result.put("sessionId", sessionId);
 		return JsonUtils.mapToJson(result);
 	}
-	
-	
 	
 }

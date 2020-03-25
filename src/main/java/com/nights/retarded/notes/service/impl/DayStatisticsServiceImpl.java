@@ -1,6 +1,7 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,5 +20,11 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
 	public List<DayStatistics> getAll() {
 		return this.dayStatisticsDao.findAll();
 	}
+
+    @Override
+    public Map getRecentData(String openId) {
+        return null;
+    }
+
 
 }
