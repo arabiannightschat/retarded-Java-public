@@ -1,10 +1,8 @@
 package com.nights.retarded.notes.service.impl;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -42,7 +40,35 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
         Map<String, Object> map = new HashMap<>();
         map.put("balance", note.getBalance());
         map.put("dayToNextMonth",DateUtils.dayToNextMonth(new Date()));
+        map.put("year", DateUtils.getYear(new Date()));
+        map.put("month", DateUtils.getMonth(new Date()));
         map.put("list", list);
+        List<String> categories = new ArrayList<>();
+        List<BigDecimal> daySpending = new ArrayList<>();
+        List<BigDecimal> dayBudget = new ArrayList<>();
+        List<BigDecimal> dynamicDayBudget = new ArrayList<>();
+        BigDecimal lastDynamicDayBudget = null;
+        BigDecimal lastDayBudget = null;
+        for(DayStatistics dayStatistics : list) {
+            String date = DateUtils.toCategories(dayStatistics.getDt());
+            categories.add(date);
+            daySpending.add(dayStatistics.getDaySpending());
+            dayBudget.add(dayStatistics.getDayBudget());
+            dynamicDayBudget.add(dayStatistics.getDynamicDayBudget());
+            lastDayBudget = dayStatistics.getDayBudget();
+            lastDynamicDayBudget = dayStatistics.getDynamicDayBudget();
+        }
+        if(categories.size() > 0){
+            for(int i = 0; i < 2 ; i++){
+                categories.add(DateUtils.toCategories(DateUtils.addDay(now, i+1)));
+                dynamicDayBudget.add(lastDynamicDayBudget);
+                dayBudget.add(lastDayBudget);
+            }
+        }
+        map.put("categories", categories);
+        map.put("daySpending", categories);
+        map.put("dayBudget", categories);
+        map.put("dynamicDayBudget", categories);
         return map;
     }
 

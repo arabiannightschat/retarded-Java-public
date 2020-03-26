@@ -34,4 +34,20 @@ public class DateUtils {
         return d - now;
     }
 
+    public static int getYear(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return c.get(Calendar.YEAR);
+    }
+
+    public static int getMonth(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return c.get(Calendar.MONTH) + 1;
+    }
+
+    public static String toCategories(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("M-dd");
+        return sdf.format(date);
+    }
 }
