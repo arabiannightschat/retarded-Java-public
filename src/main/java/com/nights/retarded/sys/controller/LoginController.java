@@ -1,5 +1,6 @@
 package com.nights.retarded.sys.controller;
 
+import com.nights.retarded.base.BaseController;
 import com.nights.retarded.common.utils.HttpUtil;
 import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.common.utils.RedisUtils;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api/sys/login")
 @Api(value="登录")
-public class LoginController {
+public class LoginController extends BaseController {
 	
 	@Autowired
 	private LoginRecordService loginRecordService;
@@ -35,7 +36,7 @@ public class LoginController {
 	 */
 	@ApiOperation(value="微信小程序登录")
 	@RequestMapping(value = "wxLogin", method = RequestMethod.GET)
-	public String wxLogin(String code, String oldSessionId) {
+	public Map wxLogin(String code, String oldSessionId) {
 
 	    String openId;
 	    String sessionId;
@@ -73,7 +74,7 @@ public class LoginController {
 		HashMap<String,Object> result = new HashMap<>();
 		result.put("sessionId", sessionId);
 		result.put("chargeDayCount",userService.findByOpenId(openId).getChargeDayCount());
-		return JsonUtils.mapToJson(result);
+		return Success(result);
 	}
 	
 }
