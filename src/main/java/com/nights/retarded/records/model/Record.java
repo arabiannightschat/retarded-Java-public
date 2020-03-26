@@ -1,6 +1,7 @@
 package com.nights.retarded.records.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -33,7 +34,7 @@ public class Record implements Serializable {
 	private String typeId;
 
 	@Column(name="money")
-	private Double money;
+	private BigDecimal money;
 
 	@Column(name="dt")
 	@Temporal(TemporalType.DATE)
@@ -44,8 +45,8 @@ public class Record implements Serializable {
 	private String description;
 
 	@Column(name="create_dt")
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createDt;
 
 	public String getRecordId() {
@@ -72,11 +73,11 @@ public class Record implements Serializable {
 		this.typeId = typeId;
 	}
 
-	public Double getMoney() {
+	public BigDecimal getMoney() {
 		return money;
 	}
 
-	public void setMoney(Double money) {
+	public void setMoney(BigDecimal money) {
 		this.money = money;
 	}
 
