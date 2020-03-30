@@ -12,6 +12,7 @@ import com.nights.retarded.notes.service.NoteService;
 import io.swagger.annotations.ApiOperation;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/notes/note")
@@ -22,18 +23,18 @@ public class NoteController extends BaseController {
 
 	@ApiOperation(value="查询所有")
 	@RequestMapping(value = "getAll", method = RequestMethod.GET)
-	public String getAll() {
-		return objectToJson(noteService.getAll());
+	public Map getAll() {
+		return Success(noteService.getAll());
 	}
 
 	@PostMapping("createNote")
-    public String createNote(BigDecimal monthBudget){
-        return objectToJson(noteService.createNote(getOpenId(), monthBudget));
+    public Map createNote(BigDecimal monthBudget){
+        return Success(noteService.createNote(getOpenId(), monthBudget));
     }
 
     @GetMapping("getCurrNote")
-    public String getCurrNote(){
-	    return objectToJson(noteService.getCurrNote(getOpenId()));
+    public Map getCurrNote(){
+	    return Success(noteService.getCurrNote(getOpenId()));
     }
 
 }

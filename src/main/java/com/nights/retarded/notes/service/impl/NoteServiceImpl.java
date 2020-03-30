@@ -28,12 +28,14 @@ public class NoteServiceImpl implements NoteService{
     public Note createNote(String openId, BigDecimal monthBudget) {
         Note note = new Note();
         note.setMonthBudget(monthBudget);
-        note.setDayBudget(monthBudget.divide(BigDecimal.valueOf(30)));
+        note.setDayBudget(monthBudget.divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP));
         note.setDynamicDayBudget(note.getDayBudget());
         note.setCreateDt(new Date());
         note.setStatus(1);
         int days = DateUtils.dayToNextMonth(new Date());
         note.setBalance(note.getDayBudget().multiply(BigDecimal.valueOf(days)));
+        note.setOpenId(openId);
+        note.setName("默认账本 " + DateUtils.daySdf2.format(new Date()));
         noteDao.save(note);
         return note;
     }

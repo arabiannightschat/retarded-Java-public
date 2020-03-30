@@ -25,8 +25,8 @@ public class DayStatisticsController extends BaseController {
 
 	@ApiOperation(value="查询所有")
 	@RequestMapping(value = "getAll", method = RequestMethod.GET)
-	public String getAll() {
-		return objectToJson(dayStatisticsService.getAll());
+	public Map getAll() {
+		return Success(dayStatisticsService.getAll());
 	}
 
 	@GetMapping("getRecentData")

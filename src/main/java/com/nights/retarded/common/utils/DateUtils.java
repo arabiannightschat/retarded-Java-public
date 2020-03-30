@@ -15,6 +15,7 @@ public class DateUtils {
 	}
 
     public static final SimpleDateFormat daySdf = new SimpleDateFormat("yyyy-MM-dd");
+    public static final SimpleDateFormat daySdf2 = new SimpleDateFormat("yyyyMMdd");
 
 	public static Date toDaySdf(Date date) {
 	    String day = daySdf.format(date);

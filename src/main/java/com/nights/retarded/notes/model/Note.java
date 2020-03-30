@@ -51,13 +51,13 @@ public class Note implements Serializable {
 	private Integer status;
 
 	@Column(name="create_dt")
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date createDt;
 
 	@Column(name="close_dt")
-	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date closeDt;
 
 	public String getNoteId() {
