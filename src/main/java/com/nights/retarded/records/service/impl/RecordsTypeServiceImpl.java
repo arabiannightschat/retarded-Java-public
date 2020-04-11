@@ -1,6 +1,8 @@
 package com.nights.retarded.records.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -19,5 +21,15 @@ public class RecordsTypeServiceImpl implements RecordsTypeService{
 	public List<RecordsType> getAll() {
 		return this.recordsTypeDao.findAll();
 	}
+
+    @Override
+    public Map<String, Object> getTypes(String openId) {
+	    List<RecordsType> commons = recordsTypeDao.findByCommonUseOrderByDefaultIxAsc(1);
+	    List<RecordsType> others = recordsTypeDao.findByCommonUseOrderByDefaultIxAsc(0);
+	    Map map = new HashMap();
+	    map.put("commons", commons);
+	    map.put("others", others);
+        return map;
+    }
 
 }

@@ -30,6 +30,9 @@ public class RecordsType implements Serializable {
 	@Column(name="type")
 	private Integer type;
 
+	@Column(name="common_use")
+    private Integer commonUse;
+
 	@Column(name="default_ix")
 	private Integer defaultIx;
 
@@ -73,4 +76,11 @@ public class RecordsType implements Serializable {
 		this.defaultIx = defaultIx;
 	}
 
+    public Integer getCommonUse() {
+        return commonUse;
+    }
+
+    public void setCommonUse(Integer commonUse) {
+        this.commonUse = commonUse;
+    }
 }
