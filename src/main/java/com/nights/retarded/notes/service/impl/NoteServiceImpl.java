@@ -46,4 +46,14 @@ public class NoteServiceImpl implements NoteService{
 	    return JsonUtils.getIndexZero(list);
     }
 
+    @Override
+    public List<Note> findByStatus(int i) {
+        return noteDao.findByStatus(i);
+    }
+
+    @Override
+    public void save(Note note) {
+        noteDao.save(note);
+    }
+
 }

@@ -32,4 +32,9 @@ public class RecordsTypeServiceImpl implements RecordsTypeService{
         return map;
     }
 
+    @Override
+    public RecordsType findById(String recordTypeId) {
+        return recordsTypeDao.findById(recordTypeId).orElse(new RecordsType());
+    }
+
 }

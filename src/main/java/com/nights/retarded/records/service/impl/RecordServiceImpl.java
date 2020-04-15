@@ -9,9 +9,14 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
+import com.nights.retarded.common.utils.StringUtils;
+import com.nights.retarded.notes.model.DayStatistics;
 import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
 import com.nights.retarded.records.model.RecentRecords;
+import com.nights.retarded.records.model.RecordsType;
+import com.nights.retarded.records.service.RecordsTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nights.retarded.records.model.Record;
@@ -25,7 +30,13 @@ public class RecordServiceImpl implements RecordService{
 	private RecordDao recordDao;
 
 	@Autowired
+    private RecordsTypeService recordsTypeService;
+
+	@Autowired
     private NoteService noteService;
+
+	@Autowired
+    private DayStatisticsService dayStatisticsService;
 
 	@Override
 	public List<Record> getAll() {
@@ -69,9 +80,15 @@ public class RecordServiceImpl implements RecordService{
 
     @Override
     public void addRecord(String recordTypeId, BigDecimal money, String description, Date dt, String openId) {
+	    dt = DateUtils.toDaySdf(dt);
+        RecordsType type = recordsTypeService.findById(recordTypeId);
 	    Record record = new Record();
 	    record.setCreateDt(new Date());
-	    record.setDescription(description);
+	    if(StringUtils.isNotBlank(description)){
+            record.setDescription(description);
+        } else {
+	        record.setDescription(type.getName());
+        }
         record.setDt(dt);
         record.setMoney(money);
         record.setTypeId(recordTypeId);
@@ -79,7 +96,34 @@ public class RecordServiceImpl implements RecordService{
         record.setNoteId(note.getNoteId());
         recordDao.save(record);
 
-        // 计算统计数据 TODO
+        // 更新日统计数据
+        DayStatistics dayStatistics = dayStatisticsService.findByNoteIdAndDt(note.getNoteId(), dt);
+        BigDecimal moneySign = money.multiply(BigDecimal.valueOf(type.getType() == 0 ? 1 : -1));
+        if(dayStatistics == null) {
+            dayStatistics = new DayStatistics();
+            dayStatistics.setDt(dt);
+            dayStatistics.setDaySpending(moneySign);
+            dayStatistics.setNoteId(note.getNoteId());
+            dayStatistics.setDayBudget(note.getDayBudget());
+            dayStatistics.setDynamicDayBudget(note.getDynamicDayBudget());
+        } else {
+            dayStatistics.setDaySpending(dayStatistics.getDaySpending().add(moneySign));
+        }
+
+        dayStatisticsService.save(dayStatistics);
+
+        // 计算账本余额数据
+        if(type.getType() == 0){ // 支出
+            note.setBalance(note.getBalance().subtract(money));
+        } else {
+            note.setBalance(note.getBalance().add(money));
+        }
+
+        // 动态日预算 = 余额 / 本月剩余天数; 日预算 = 月预算 / 30
+        int dayToNextMonth = DateUtils.dayToNextMonth(new Date());
+        note.setDynamicDayBudget(note.getBalance().divide(BigDecimal.valueOf(dayToNextMonth), 2, BigDecimal.ROUND_HALF_UP));
+
+        noteService.save(note);
 
     }
 

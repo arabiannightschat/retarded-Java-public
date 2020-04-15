@@ -12,4 +12,8 @@ public interface NoteService {
     Note createNote(String openId, BigDecimal monthBudget);
 
     Note getCurrNote(String openId);
+
+    List<Note> findByStatus(int i);
+
+    void save(Note note);
 }

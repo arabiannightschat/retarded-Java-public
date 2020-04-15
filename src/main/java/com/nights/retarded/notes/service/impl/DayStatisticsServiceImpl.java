@@ -75,5 +75,15 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
         return map;
     }
 
+    @Override
+    public DayStatistics findByNoteIdAndDt(String noteId, Date dt) {
+        return dayStatisticsDao.findByNoteIdAndDt(noteId, dt);
+    }
+
+    @Override
+    public void save(DayStatistics dayStatistics) {
+        dayStatisticsDao.save(dayStatistics);
+    }
+
 
 }

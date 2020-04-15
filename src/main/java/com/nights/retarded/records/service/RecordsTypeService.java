@@ -10,4 +10,6 @@ public interface RecordsTypeService {
 	List<RecordsType> getAll();
 
     Map<String, Object> getTypes(String openId);
+
+    RecordsType findById(String recordTypeId);
 }
