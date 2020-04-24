@@ -44,7 +44,18 @@ public class DayStatistics implements Serializable {
 	@Column(name="dynamic_day_budget")
 	private BigDecimal dynamicDayBudget;
 
-	public String getDayStatId() {
+	@Column(name="balance")
+    private BigDecimal balance;
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public String getDayStatId() {
 		return dayStatId;
 	}
 

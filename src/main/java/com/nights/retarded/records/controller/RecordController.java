@@ -36,7 +36,16 @@ public class RecordController extends BaseController {
 
     @PostMapping("addRecord")
     public Map addRecord(String recordTypeId, BigDecimal money, String description, @RequestParam(required = false) Date dt){
+	    if(dt == null) {
+	        dt = new Date();
+        }
         recordService.addRecord(recordTypeId, money, description, dt, getOpenId());
         return Success();
+    }
+
+    @PostMapping("delRecord")
+    public Map delRecord(String recordId) {
+	    recordService.delRecord(recordId);
+	    return Success();
     }
 }

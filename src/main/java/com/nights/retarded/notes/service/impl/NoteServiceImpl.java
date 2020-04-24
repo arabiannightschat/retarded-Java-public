@@ -8,6 +8,9 @@ import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.notes.model.DayStatistics;
+import com.nights.retarded.notes.service.DayStatisticsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.dao.NoteDao;
@@ -18,6 +21,9 @@ public class NoteServiceImpl implements NoteService{
 
 	@Resource(name = "noteDao")
 	private NoteDao noteDao;
+
+	@Autowired
+    private DayStatisticsService dayStatisticsService;
 
 	@Override
 	public List<Note> getAll() {
@@ -37,6 +43,7 @@ public class NoteServiceImpl implements NoteService{
         note.setOpenId(openId);
         note.setName("默认账本 " + DateUtils.daySdf2.format(new Date()));
         noteDao.save(note);
+        dayStatisticsService.initDayStatistics(note);
         return note;
     }
 
@@ -54,6 +61,11 @@ public class NoteServiceImpl implements NoteService{
     @Override
     public void save(Note note) {
         noteDao.save(note);
+    }
+
+    @Override
+    public Note findById(String noteId) {
+        return noteDao.findById(noteId).orElse(null);
     }
 
 }

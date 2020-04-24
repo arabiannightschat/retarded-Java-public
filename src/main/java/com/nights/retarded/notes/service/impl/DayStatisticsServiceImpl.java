@@ -32,6 +32,7 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
 
     @Override
     public Map getRecentData(String openId) {
+	    // 获取基本信息
         Note note = noteService.getCurrNote(openId);
         if(note == null) {
             return null;
@@ -39,39 +40,34 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
         Date startTime = DateUtils.addDay(now, -5);
-        List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtBetween(note.getNoteId(), now, startTime);
+        List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtBetweenOrderByDtAsc(note.getNoteId(), startTime, now);
         Map<String, Object> map = new HashMap<>();
         map.put("balance", note.getBalance());
         map.put("dayToNextMonth",DateUtils.dayToNextMonth(new Date()));
         map.put("year", DateUtils.getYear(new Date()));
         map.put("month", DateUtils.getMonth(new Date()));
-        map.put("list", list);
+
+        // 获取图表信息
         List<String> categories = new ArrayList<>();
         List<BigDecimal> daySpending = new ArrayList<>();
         List<BigDecimal> dayBudget = new ArrayList<>();
         List<BigDecimal> dynamicDayBudget = new ArrayList<>();
-        BigDecimal lastDynamicDayBudget = null;
-        BigDecimal lastDayBudget = null;
         for(DayStatistics dayStatistics : list) {
             String date = DateUtils.toCategories(dayStatistics.getDt());
             categories.add(date);
             daySpending.add(dayStatistics.getDaySpending());
             dayBudget.add(dayStatistics.getDayBudget());
             dynamicDayBudget.add(dayStatistics.getDynamicDayBudget());
-            lastDayBudget = dayStatistics.getDayBudget();
-            lastDynamicDayBudget = dayStatistics.getDynamicDayBudget();
         }
         if(categories.size() > 0){
             for(int i = 0; i < 2 ; i++){
                 categories.add(DateUtils.toCategories(DateUtils.addDay(now, i+1)));
-                dynamicDayBudget.add(lastDynamicDayBudget);
-                dayBudget.add(lastDayBudget);
             }
         }
         map.put("categories", categories);
-        map.put("daySpending", categories);
-        map.put("dayBudget", categories);
-        map.put("dynamicDayBudget", categories);
+        map.put("daySpending", daySpending);
+        map.put("dayBudget", dayBudget);
+        map.put("dynamicDayBudget", dynamicDayBudget);
         return map;
     }
 
@@ -83,6 +79,30 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
     @Override
     public void save(DayStatistics dayStatistics) {
         dayStatisticsDao.save(dayStatistics);
+    }
+
+    @Override
+    public void saveAll(List<DayStatistics> dayStatisticsList) {
+        dayStatisticsDao.saveAll(dayStatisticsList);
+    }
+
+    @Override
+    public DayStatistics initDayStatistics(Note note) {
+        DayStatistics dayStatistics = new DayStatistics();
+        Date today = DateUtils.toDaySdf(new Date());
+        dayStatistics.setDt(today);
+        dayStatistics.setDaySpending(BigDecimal.ZERO);
+        dayStatistics.setNoteId(note.getNoteId());
+        dayStatistics.setDayBudget(note.getDayBudget());
+        dayStatistics.setDynamicDayBudget(note.getDynamicDayBudget());
+        dayStatistics.setBalance(note.getBalance());
+        dayStatisticsDao.save(dayStatistics);
+        return dayStatistics;
+    }
+
+    @Override
+    public List<DayStatistics> findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(String noteId, Date dt) {
+        return dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(noteId, dt);
     }
 
 

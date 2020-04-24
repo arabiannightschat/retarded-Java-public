@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface DayStatisticsDao extends JpaRepository<DayStatistics, String>{
 
-    List<DayStatistics> findByNoteIdAndDtBetween(String noteId, Date now, Date startTime);
+    List<DayStatistics> findByNoteIdAndDtBetweenOrderByDtAsc(String noteId, Date now, Date startTime);
 
     DayStatistics findByNoteIdAndDt(String noteId, Date dt);
+
+    List<DayStatistics> findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(String noteId, Date dt);
 }

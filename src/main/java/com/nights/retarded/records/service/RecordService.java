@@ -14,4 +14,8 @@ public interface RecordService {
     List<RecentRecords> getRecentRecords(String openId);
 
     void addRecord(String recordTypeId, BigDecimal money, String description, Date dt, String openId);
+
+    void delRecord(String recordId);
+
+    BigDecimal getDynamicDayBudget(Date dt, BigDecimal balance);
 }

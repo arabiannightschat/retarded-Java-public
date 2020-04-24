@@ -32,7 +32,7 @@ public class DateUtils {
         c.setTime(date);
         int d = c.getActualMaximum(Calendar.DAY_OF_MONTH);
         int now = c.get(Calendar.DAY_OF_MONTH);
-        return d - now;
+        return d - now + 1;
     }
 
     public static int getYear(Date date) {

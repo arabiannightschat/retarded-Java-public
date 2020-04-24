@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public class RecordVO {
 
+    private String recordId;
+
     private BigDecimal money;
 
     private boolean isNew;
@@ -14,6 +16,14 @@ public class RecordVO {
 
     public BigDecimal getMoney() {
         return money;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
     }
 
     public void setMoney(BigDecimal money) {

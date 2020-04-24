@@ -5,6 +5,7 @@ import com.nights.retarded.notes.model.DayStatistics;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
+import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,18 +22,19 @@ public class ScheduledTasks {
 
 	@Autowired
     private DayStatisticsService dayStatisticsService;
+
+	@Autowired
+    private RecordService recordService;
 	
     @Scheduled(cron="0 0 0 * * *")
     public void updateDayStatistics() {
-        Date today = DateUtils.toDaySdf(new Date());
+
         List<Note> notes = noteService.findByStatus(1);
         for(Note note : notes){
-            DayStatistics dayStatistics = new DayStatistics();
-            dayStatistics.setNoteId(note.getNoteId());
-            dayStatistics.setDaySpending(BigDecimal.ZERO);
-            dayStatistics.setDayBudget(note.getDayBudget());
-            dayStatistics.setDynamicDayBudget(note.getDynamicDayBudget());
-            dayStatistics.setDt(today);
+
+            DayStatistics dayStatistics = dayStatisticsService.initDayStatistics(note);
+            BigDecimal dynamicDayBudget = recordService.getDynamicDayBudget(new Date(), note.getBalance());
+            note.setDynamicDayBudget(dynamicDayBudget);
             dayStatisticsService.save(dayStatistics);
         }
     }
