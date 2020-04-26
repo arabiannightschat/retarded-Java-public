@@ -139,7 +139,9 @@ public class RecordServiceImpl implements RecordService{
         // 更新日统计数据(指定日期后的数据都会受到影响)
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
         for(DayStatistics dayStatistics : dayStatisticsList){
-            dayStatistics.setDaySpending(dayStatistics.getDaySpending().add(moneySign));
+            if(dayStatistics.getDt().getTime() == dt.getTime()){
+                dayStatistics.setDaySpending(dayStatistics.getDaySpending().add(moneySign));
+            }
             dayStatistics.setBalance(dayStatistics.getBalance().subtract(moneySign));
             BigDecimal dynamicDayBudget = getDynamicDayBudget(dayStatistics.getDt(), dayStatistics.getBalance());
             dayStatistics.setDynamicDayBudget(dynamicDayBudget);
