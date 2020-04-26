@@ -140,7 +140,7 @@ public class RecordServiceImpl implements RecordService{
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
         for(DayStatistics dayStatistics : dayStatisticsList){
             dayStatistics.setDaySpending(dayStatistics.getDaySpending().add(moneySign));
-            dayStatistics.setBalance(dayStatistics.getBalance().add(moneySign));
+            dayStatistics.setBalance(dayStatistics.getBalance().subtract(moneySign));
             BigDecimal dynamicDayBudget = getDynamicDayBudget(dayStatistics.getDt(), dayStatistics.getBalance());
             dayStatistics.setDynamicDayBudget(dynamicDayBudget);
         }
