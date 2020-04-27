@@ -49,7 +49,7 @@ public class RecordServiceImpl implements RecordService{
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
         Date startTime = DateUtils.addDay(now, -5);
-        List<Record> list = recordDao.findByNoteIdAndDtBetweenOrderByCreateDtDesc(note.getNoteId(), startTime, now);
+        List<Record> list = recordDao.findByNoteIdAndDtBetweenOrderByDtDesc(note.getNoteId(), startTime, now);
 
         Map<String, RecordsType> typesMap = new HashMap<>();
 

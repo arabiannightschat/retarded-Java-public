@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface RecordDao extends JpaRepository<Record, String>{
 
-    List<Record> findByNoteIdAndDtBetweenOrderByCreateDtDesc(String noteId, Date now, Date startTime);
+    List<Record> findByNoteIdAndDtBetweenOrderByDtDesc(String noteId, Date startTime, Date now);
 }
