@@ -63,6 +63,8 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
             for(int i = 0; i < 2 ; i++){
                 categories.add(DateUtils.toCategories(DateUtils.addDay(now, i+1)));
             }
+            dayBudget.add(note.getDayBudget());
+            dynamicDayBudget.add(note.getDynamicDayBudget());
         }
         map.put("categories", categories);
         map.put("daySpending", daySpending);

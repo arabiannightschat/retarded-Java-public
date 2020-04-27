@@ -137,19 +137,23 @@ public class RecordServiceImpl implements RecordService{
 
     private void editDayStatAndNote(Date dt, Note note, BigDecimal moneySign) {
         // 更新日统计数据(指定日期后的数据都会受到影响)
+        BigDecimal nextDynamicDayBudget = null;
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
-        for(DayStatistics dayStatistics : dayStatisticsList){
+        for(int i = 0; i < dayStatisticsList.size() ; i++){
+            DayStatistics dayStatistics = dayStatisticsList.get(i);
             if(dayStatistics.getDt().getTime() == dt.getTime()){
                 dayStatistics.setDaySpending(dayStatistics.getDaySpending().add(moneySign));
             }
             dayStatistics.setBalance(dayStatistics.getBalance().subtract(moneySign));
-            BigDecimal dynamicDayBudget = getDynamicDayBudget(dayStatistics.getDt(), dayStatistics.getBalance());
-            dayStatistics.setDynamicDayBudget(dynamicDayBudget);
+            if(i > 0){
+                dayStatistics.setDynamicDayBudget(nextDynamicDayBudget);
+            }
+            nextDynamicDayBudget = getDynamicDayBudget(dayStatistics.getDt(), dayStatistics.getBalance());
         }
 
         // 计算账本余额数据
         note.setBalance(note.getBalance().subtract(moneySign));
-        note.setDynamicDayBudget(getDynamicDayBudget(new Date(), note.getBalance()));
+        note.setDynamicDayBudget(nextDynamicDayBudget);
 
         noteService.save(note);
         dayStatisticsService.saveAll(dayStatisticsList);
@@ -172,8 +176,25 @@ public class RecordServiceImpl implements RecordService{
 
     // 动态日预算 = 余额 / 本月剩余天数; 日预算 = 月预算 / 30
     public BigDecimal getDynamicDayBudget(Date dt, BigDecimal balance){
-        int dayToNextMonth = DateUtils.dayToNextMonth(dt);
+        int dayToNextMonth = DateUtils.dayToNextMonth(dt) - 1;
+        if(dayToNextMonth == 0) {
+            return null;
+        }
         return balance.divide(BigDecimal.valueOf(dayToNextMonth), 2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    @Override
+    public BigDecimal getDynamicDayBudgetTask(Date date, BigDecimal balance) {
+        int dayToNextMonth = DateUtils.dayToNextMonth(date);
+        if(dayToNextMonth == 0) {
+            return null;
+        }
+        return balance.divide(BigDecimal.valueOf(dayToNextMonth), 2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    @Override
+    public Integer countByNoteId(String noteId) {
+        return recordDao.countByNoteId(noteId);
     }
 
 

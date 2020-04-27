@@ -10,6 +10,7 @@ import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.notes.model.DayStatistics;
 import com.nights.retarded.notes.service.DayStatisticsService;
+import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nights.retarded.notes.model.Note;
@@ -25,6 +26,9 @@ public class NoteServiceImpl implements NoteService{
 	@Autowired
     private DayStatisticsService dayStatisticsService;
 
+	@Autowired
+    private RecordService recordService;
+
 	@Override
 	public List<Note> getAll() {
 		return this.noteDao.findAll();
@@ -35,15 +39,19 @@ public class NoteServiceImpl implements NoteService{
         Note note = new Note();
         note.setMonthBudget(monthBudget);
         note.setDayBudget(monthBudget.divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP));
-        note.setDynamicDayBudget(note.getDayBudget());
-        note.setCreateDt(new Date());
-        note.setStatus(1);
         int days = DateUtils.dayToNextMonth(new Date());
         note.setBalance(note.getDayBudget().multiply(BigDecimal.valueOf(days)));
+        note.setDynamicDayBudget(recordService.getDynamicDayBudget(new Date(), note.getBalance()));
+        note.setCreateDt(new Date());
+        note.setStatus(1);
         note.setOpenId(openId);
         note.setName("默认账本 " + DateUtils.daySdf2.format(new Date()));
+        note.setMonthStatisticsState(1);
+        note.setDaysWithoutOperation(0);
         noteDao.save(note);
-        dayStatisticsService.initDayStatistics(note);
+        DayStatistics dayStatistics = dayStatisticsService.initDayStatistics(note);
+        dayStatistics.setDynamicDayBudget(null);
+        dayStatisticsService.save(dayStatistics);
         return note;
     }
 
@@ -66,6 +74,12 @@ public class NoteServiceImpl implements NoteService{
     @Override
     public Note findById(String noteId) {
         return noteDao.findById(noteId).orElse(null);
+    }
+
+    @Override
+    public void unfreeze(String noteId) {
+        // TODO 解冻账本，补充日、月统计数据，更新账本数据
+
     }
 
 }

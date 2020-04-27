@@ -6,6 +6,11 @@ import com.nights.retarded.notes.model.MonthStatistics;
 
 public interface MonthStatisticsService {
 
-	public List<MonthStatistics> getAll();
+	List<MonthStatistics> getAll();
 
+    void save(MonthStatistics monthStatistics);
+
+    MonthStatistics getLastMonthStatistics(String noteId);
+
+    void importLastMonthBalance(String noteId, Integer isImport);
 }

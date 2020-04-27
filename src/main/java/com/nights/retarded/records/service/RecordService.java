@@ -18,4 +18,8 @@ public interface RecordService {
     void delRecord(String recordId);
 
     BigDecimal getDynamicDayBudget(Date dt, BigDecimal balance);
+
+    BigDecimal getDynamicDayBudgetTask(Date date, BigDecimal balance);
+
+    Integer countByNoteId(String noteId);
 }

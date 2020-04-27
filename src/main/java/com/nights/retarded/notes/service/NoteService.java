@@ -19,4 +19,6 @@ public interface NoteService {
     void save(Note note);
 
     Note findById(String noteId);
+
+    void unfreeze(String noteId);
 }

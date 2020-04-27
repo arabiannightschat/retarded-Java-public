@@ -62,4 +62,26 @@ public class DateUtils {
         }
         return weekDays[w];
     }
+
+    public static int lastMonthDays() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.MONTH, -1);
+        return c.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    public static Date lastMonthFirstDay() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.MONTH, -1);
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        return c.getTime();
+    }
+
+    public static Date currMonthFirstDay() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        return c.getTime();
+    }
 }

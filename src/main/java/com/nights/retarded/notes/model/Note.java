@@ -60,7 +60,29 @@ public class Note implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
 	private Date closeDt;
 
-	public String getNoteId() {
+	@Column(name="month_statistics_state")
+	private Integer monthStatisticsState;
+
+	@Column(name = "days_without_operation")
+	private Integer daysWithoutOperation;
+
+    public Integer getDaysWithoutOperation() {
+        return daysWithoutOperation;
+    }
+
+    public void setDaysWithoutOperation(Integer daysWithoutOperation) {
+        this.daysWithoutOperation = daysWithoutOperation;
+    }
+
+    public Integer getMonthStatisticsState() {
+        return monthStatisticsState;
+    }
+
+    public void setMonthStatisticsState(Integer monthStatisticsState) {
+        this.monthStatisticsState = monthStatisticsState;
+    }
+
+    public String getNoteId() {
 		return noteId;
 	}
 

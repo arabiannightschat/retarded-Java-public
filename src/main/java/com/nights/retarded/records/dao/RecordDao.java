@@ -10,4 +10,6 @@ import java.util.List;
 public interface RecordDao extends JpaRepository<Record, String>{
 
     List<Record> findByNoteIdAndDtBetweenOrderByDtDesc(String noteId, Date startTime, Date now);
+
+    Integer countByNoteId(String noteId);
 }

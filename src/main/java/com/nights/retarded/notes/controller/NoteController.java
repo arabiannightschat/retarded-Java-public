@@ -37,4 +37,9 @@ public class NoteController extends BaseController {
 	    return Success(noteService.getCurrNote(getOpenId()));
     }
 
+    @PostMapping("unfreeze")
+    public Map unfreeze(){
+	    noteService.unfreeze(getCurrNoteId());
+	    return Success();
+    }
 }

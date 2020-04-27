@@ -47,7 +47,18 @@ public class MonthStatistics implements Serializable {
 	@Column(name="balance")
 	private BigDecimal balance;
 
-	public String getMonthStatId() {
+	@Column(name = "is_clear")
+	private Integer isClear;
+
+    public Integer getIsClear() {
+        return isClear;
+    }
+
+    public void setIsClear(Integer isClear) {
+        this.isClear = isClear;
+    }
+
+    public String getMonthStatId() {
 		return monthStatId;
 	}
 
