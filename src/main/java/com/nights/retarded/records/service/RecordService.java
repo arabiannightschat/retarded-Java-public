@@ -21,5 +21,6 @@ public interface RecordService {
 
     BigDecimal getDynamicDayBudgetTask(Date date, BigDecimal balance);
 
-    Integer countByNoteId(String noteId);
+    int countByNoteIdAndDt(String noteId, Date yesterday);
+
 }

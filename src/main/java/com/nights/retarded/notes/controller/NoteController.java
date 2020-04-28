@@ -37,9 +37,14 @@ public class NoteController extends BaseController {
 	    return Success(noteService.getCurrNote(getOpenId()));
     }
 
+    /**
+     * 解冻账本
+     * @param isImportBalance 是否继承冻结前的余额
+     * @return
+     */
     @PostMapping("unfreeze")
-    public Map unfreeze(){
-	    noteService.unfreeze(getCurrNoteId());
+    public Map unfreeze(Integer isImportBalance){
+	    noteService.unfreeze(getCurrNoteId(), isImportBalance);
 	    return Success();
     }
 }

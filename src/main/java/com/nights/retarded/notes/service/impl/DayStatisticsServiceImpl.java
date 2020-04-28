@@ -1,7 +1,6 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -105,6 +104,18 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
     @Override
     public List<DayStatistics> findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(String noteId, Date dt) {
         return dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(noteId, dt);
+    }
+
+    @Override
+    public DayStatistics findFirstByNoteIdOrderByDtDesc(String noteId) {
+        return JsonUtils.getIndexZero(dayStatisticsDao.findByNoteIdOrderByDtDesc(noteId));
+    }
+
+    @Override
+    public void deleteLastDaysData(String noteId, int freezeDaysWithoutOperation) {
+        Date startDt = DateUtils.addDay(DateUtils.toDaySdf(new Date()), freezeDaysWithoutOperation*(-1) );
+        List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(noteId, startDt);
+        dayStatisticsDao.deleteAll(list);
     }
 
 

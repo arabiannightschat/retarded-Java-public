@@ -40,17 +40,22 @@ public class ScheduledTasks {
             DayStatistics dayStatistics = dayStatisticsService.initDayStatistics(note);
             BigDecimal dynamicDayBudget = recordService.getDynamicDayBudgetTask(new Date(), note.getBalance());
             note.setDynamicDayBudget(dynamicDayBudget);
+            dayStatisticsService.save(dayStatistics);
+
             // 记录连续没记账天数
-            if(recordService.countByNoteId(note.getNoteId()) > 0){
+            Date yesterday = DateUtils.addDay(DateUtils.toDaySdf(new Date()), -1);
+            if(recordService.countByNoteIdAndDt(note.getNoteId(), yesterday) > 0){
                 note.setDaysWithoutOperation(0);
             } else {
                 note.setDaysWithoutOperation(note.getDaysWithoutOperation() + 1);
             }
-            if(note.getDaysWithoutOperation() > 7){
+            // 连续不记账7天则冻结账本并删掉这些天的统计数据
+            int freezeDaysWithoutOperation = 5;
+            if(note.getDaysWithoutOperation() >= freezeDaysWithoutOperation){
                 note.setStatus(0);
+                dayStatisticsService.deleteLastDaysData(note.getNoteId(), freezeDaysWithoutOperation);
             }
             noteService.save(note);
-            dayStatisticsService.save(dayStatistics);
         }
     }
 
@@ -64,27 +69,29 @@ public class ScheduledTasks {
         List<Note> notes = noteService.findByStatus(1);
         for(Note note : notes){
 
+            // 写入上个月的月统计数据
             MonthStatistics monthStatistics = new MonthStatistics();
-            monthStatistics.setBalance(note.getBalance());
-            int lastMonthDays = DateUtils.lastMonthDays();
-            monthStatistics.setAvgDaySpending(note.getBalance().divide(BigDecimal.valueOf(lastMonthDays),2));
             monthStatistics.setDt(DateUtils.lastMonthFirstDay());
+            monthStatistics.setBalance(note.getBalance());
+
+            // 获取平均日花销
+            int monthDays = DateUtils.monthDays(monthStatistics.getDt());
+            monthStatistics.setAvgDaySpending(note.getBalance().divide(BigDecimal.valueOf(monthDays),2));
             monthStatistics.setMonthBudget(note.getMonthBudget());
             monthStatistics.setMonthSpending(monthStatistics.getMonthBudget().subtract(monthStatistics.getBalance()));
             monthStatistics.setNoteId(note.getNoteId());
+
+            // 默认在月结时，重置账本余额，这里是一个标识
             monthStatistics.setIsClear(1);
             monthStatisticsService.save(monthStatistics);
+
+            // 账本状态设置为：还未设定是否继承余额
             note.setMonthStatisticsState(0);
-            note.setBalance(note.getMonthBudget());
+            int dayToNextMonth = DateUtils.dayToNextMonth(DateUtils.currMonthFirstDay());
+            note.setBalance(note.getDayBudget().multiply(BigDecimal.valueOf(dayToNextMonth)));
             note.setDynamicDayBudget(null);
             noteService.save(note);
         }
-
-
-        
-
-
-
 
     }
 }

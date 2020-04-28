@@ -63,13 +63,6 @@ public class DateUtils {
         return weekDays[w];
     }
 
-    public static int lastMonthDays() {
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        c.add(Calendar.MONTH, -1);
-        return c.getActualMaximum(Calendar.DAY_OF_MONTH);
-    }
-
     public static Date lastMonthFirstDay() {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
@@ -83,5 +76,25 @@ public class DateUtils {
         c.setTime(new Date());
         c.set(Calendar.DAY_OF_MONTH, 1);
         return c.getTime();
+    }
+
+    public static Integer diff(Date date1, Date date2){
+        long diff = date1.getTime() - date2.getTime();
+        return (int) (diff / (24 * 60 * 60 * 1000));
+    }
+
+    public static boolean isSameMonth(Date date, Date dt) {
+        if(getMonth(date) == getMonth(dt)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static int monthDays(Date dt) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.add(Calendar.MONTH, -1);
+        return c.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 }

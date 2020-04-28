@@ -3,6 +3,7 @@ package com.nights.retarded.notes.service;
 import java.util.List;
 
 import com.nights.retarded.notes.model.MonthStatistics;
+import com.nights.retarded.notes.model.Note;
 
 public interface MonthStatisticsService {
 
@@ -13,4 +14,5 @@ public interface MonthStatisticsService {
     MonthStatistics getLastMonthStatistics(String noteId);
 
     void importLastMonthBalance(String noteId, Integer isImport);
+
 }

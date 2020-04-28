@@ -193,8 +193,8 @@ public class RecordServiceImpl implements RecordService{
     }
 
     @Override
-    public Integer countByNoteId(String noteId) {
-        return recordDao.countByNoteId(noteId);
+    public int countByNoteIdAndDt(String noteId, Date yesterday) {
+        return recordDao.countByNoteIdAndDt(noteId, yesterday);
     }
 
 

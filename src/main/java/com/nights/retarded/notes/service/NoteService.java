@@ -2,7 +2,6 @@ package com.nights.retarded.notes.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import com.nights.retarded.notes.model.Note;
 
@@ -20,5 +19,6 @@ public interface NoteService {
 
     Note findById(String noteId);
 
-    void unfreeze(String noteId);
+    void unfreeze(String noteId, Integer isImportBalance);
+
 }

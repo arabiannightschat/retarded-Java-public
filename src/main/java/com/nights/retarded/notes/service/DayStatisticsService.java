@@ -1,6 +1,5 @@
 package com.nights.retarded.notes.service;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,4 +22,8 @@ public interface DayStatisticsService {
     DayStatistics initDayStatistics(Note note);
 
     List<DayStatistics> findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(String noteId, Date dt);
+
+    DayStatistics findFirstByNoteIdOrderByDtDesc(String noteId);
+
+    void deleteLastDaysData(String noteId, int freezeDaysWithoutOperation);
 }

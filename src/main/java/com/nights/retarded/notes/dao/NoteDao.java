@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NoteDao extends JpaRepository<Note, String>{
 
-    List<Note> findByOpenIdOrderByCreateDtDesc(String openId);
-
     List<Note> findByStatus(int i);
+
+    List<Note> findByOpenIdAndStatusOrderByCreateDtDesc(String openId, int i);
 }
