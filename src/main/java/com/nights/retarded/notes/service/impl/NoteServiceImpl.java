@@ -110,7 +110,7 @@ public class NoteServiceImpl implements NoteService{
                 // 月份天数
                 int monthDays = DateUtils.monthDays(lastDate);
                 // 记账天数
-                int monthDaysReal = DateUtils.diff(lastDate, monthFirst);
+                int monthDaysReal = DateUtils.diff(lastDate, monthFirst) + 1;
                 // 当月花费 = 总日预算 - 账本余额
                 monthStatistics.setMonthSpending(note.getMonthBudget().multiply(BigDecimal.valueOf(monthDays))
                         .subtract(note.getBalance()));
