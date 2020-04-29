@@ -63,6 +63,13 @@ public class DateUtils {
         return weekDays[w];
     }
 
+    public static Date monthFirstDay(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, -1);
+        return c.getTime();
+    }
+
     public static Date lastMonthFirstDay() {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());

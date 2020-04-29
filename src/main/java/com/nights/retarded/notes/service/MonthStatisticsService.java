@@ -1,5 +1,6 @@
 package com.nights.retarded.notes.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.nights.retarded.notes.model.MonthStatistics;
@@ -15,4 +16,5 @@ public interface MonthStatisticsService {
 
     void importLastMonthBalance(String noteId, Integer isImport);
 
+    MonthStatistics findByNoteIdAndDt(String noteId, Date monthFirst);
 }

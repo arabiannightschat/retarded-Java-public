@@ -78,4 +78,9 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
 
     }
 
+    @Override
+    public MonthStatistics findByNoteIdAndDt(String noteId, Date monthFirst) {
+        return monthStatisticsDao.findByNoteIdAndDt(noteId, monthFirst);
+    }
+
 }
