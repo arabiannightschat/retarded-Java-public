@@ -18,11 +18,35 @@ public class RedisUtils {
 		RedisUtils.redisTemplate = redisTemplate;
 	}
 	
-	public static void set(String key,String value) {
-		redisTemplate.opsForValue().set(key, value , 30, TimeUnit.DAYS);
+	public static void set30Days(String key,String value) {
+		set(key, value , 30, TimeUnit.DAYS);
 	}
-	
-	public static String get(String key) {
+
+    /**
+     * 写入Redis，默认没有过期时间
+     */
+    public static void set(String key,String value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    /**
+     * 写入Redis
+     * @param exTime 过期时间（秒）
+     */
+    public static void set(String key,String value,Integer exTime) {
+        set(key, value, exTime, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 写入Redis
+     * @param exTime 过期时间
+     * @param timeUnit 时间单位
+     */
+    public static void set(String key, String value, Integer exTime, TimeUnit timeUnit) {
+        redisTemplate.opsForValue().set(key, value, exTime, timeUnit);
+    }
+
+    public static String get(String key) {
 		return redisTemplate.opsForValue().get(key);
 	}
 	

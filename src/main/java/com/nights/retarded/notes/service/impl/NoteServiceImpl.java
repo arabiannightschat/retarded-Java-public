@@ -152,6 +152,17 @@ public class NoteServiceImpl implements NoteService{
 
     }
 
+    @Override
+    public Note getFreezeNote(String openId) {
+        Note activeNote = getCurrNote(openId);
+        if(activeNote == null) {
+            List<Note> freezeNotes = noteDao.findByOpenIdAndStatusOrderByCreateDtDesc(openId, 0);
+            Note freezeNote = JsonUtils.getIndexZero(freezeNotes);
+            return freezeNote;
+        }
+        return null;
+    }
+
     private Note sameMonthUnfreeze(Integer isImportBalance, Date lastDate, Note note) {
         Date startDt = DateUtils.addDay(lastDate,1);
         Date endDt = DateUtils.toDaySdf(new Date());

@@ -50,7 +50,7 @@ public class LoginController extends BaseController {
             String wxOpenId = HttpUtil.get(WxUrl.codeToOpenId.getUrl(), params);
 
             sessionId = "AZ" + UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
-            RedisUtils.set(sessionId, wxOpenId);
+            RedisUtils.set30Days(sessionId, wxOpenId);
             RedisUtils.del(oldSessionId);
             openId = JsonUtils.toOpenId(wxOpenId);
 
@@ -70,7 +70,7 @@ public class LoginController extends BaseController {
 
 		// 记录登录记录
 		loginRecordService.addLoginRecord(openId);
-		
+
 		HashMap<String,Object> result = new HashMap<>();
 		result.put("sessionId", sessionId);
 		result.put("chargeDayCount",userService.findByOpenId(openId).getChargeDayCount());

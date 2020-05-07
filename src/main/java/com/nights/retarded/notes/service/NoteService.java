@@ -21,4 +21,5 @@ public interface NoteService {
 
     void unfreeze(String noteId, Integer isImportBalance);
 
+    Note getFreezeNote(String openId);
 }

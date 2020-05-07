@@ -47,4 +47,10 @@ public class NoteController extends BaseController {
 	    noteService.unfreeze(getCurrNoteId(), isImportBalance);
 	    return Success();
     }
+
+    @GetMapping("getFreezeNote")
+    public Map getFreezeNote(){
+        return Success(noteService.getFreezeNote(getOpenId()));
+    }
+
 }

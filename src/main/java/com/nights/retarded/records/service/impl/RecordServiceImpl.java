@@ -46,6 +46,9 @@ public class RecordServiceImpl implements RecordService{
     @Override
     public List<RecentRecords> getRecentRecords(String openId) {
         Note note = noteService.getCurrNote(openId);
+        if(note == null) {
+            return null;
+        }
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
         Date startTime = DateUtils.addDay(now, -5);
