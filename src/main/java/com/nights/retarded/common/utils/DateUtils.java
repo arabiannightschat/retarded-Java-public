@@ -66,7 +66,7 @@ public class DateUtils {
     public static Date monthFirstDay(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        c.add(Calendar.MONTH, -1);
+        c.set(Calendar.DAY_OF_MONTH, 1);
         return c.getTime();
     }
 
@@ -101,7 +101,13 @@ public class DateUtils {
     public static int monthDays(Date dt) {
         Calendar c = Calendar.getInstance();
         c.setTime(dt);
-        c.add(Calendar.MONTH, -1);
         return c.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    public static Date monthLastDay(Date dt) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.set(Calendar.DAY_OF_MONTH, monthDays(dt));
+        return c.getTime();
     }
 }

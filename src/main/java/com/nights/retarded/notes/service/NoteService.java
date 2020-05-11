@@ -19,7 +19,7 @@ public interface NoteService {
 
     Note findById(String noteId);
 
-    void unfreeze(String noteId, Integer isImportBalance);
+    void unfreeze(Note noteId);
 
     Note getFreezeNote(String openId);
 }

@@ -88,7 +88,8 @@ public class ScheduledTasks {
             // 账本状态设置为：还未设定是否继承余额
             note.setMonthStatisticsState(0);
             int dayToNextMonth = DateUtils.dayToNextMonth(DateUtils.currMonthFirstDay());
-            note.setBalance(note.getDayBudget().multiply(BigDecimal.valueOf(dayToNextMonth)));
+            note.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(dayToNextMonth)));
+            note.setBalance(note.getMonthBudget());
             note.setDynamicDayBudget(null);
             noteService.save(note);
         }

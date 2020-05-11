@@ -26,4 +26,6 @@ public interface DayStatisticsService {
     DayStatistics findFirstByNoteIdOrderByDtDesc(String noteId);
 
     void deleteLastDaysData(String noteId, int freezeDaysWithoutOperation);
+
+    List<DayStatistics> findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(String noteId, Date monthFirst, Date monthLast);
 }

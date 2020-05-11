@@ -1,7 +1,6 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
-import java.time.Month;
 import java.util.Date;
 import java.util.List;
 
@@ -43,10 +42,10 @@ public class NoteServiceImpl implements NoteService{
     @Override
     public Note createNote(String openId, BigDecimal monthBudget) {
         Note note = new Note();
-        note.setMonthBudget(monthBudget);
         note.setDayBudget(monthBudget.divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP));
         int days = DateUtils.dayToNextMonth(new Date());
-        note.setBalance(note.getDayBudget().multiply(BigDecimal.valueOf(days)));
+        note.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(days)));
+        note.setBalance(note.getMonthBudget());
         note.setDynamicDayBudget(recordService.getDynamicDayBudget(new Date(), note.getBalance()));
         note.setCreateDt(new Date());
         note.setStatus(1);
@@ -86,22 +85,22 @@ public class NoteServiceImpl implements NoteService{
      * 解冻账本，没记账的时间视为日花费=日预算，补充日、月统计数据，更新账本数据
      */
     @Override
-    public void unfreeze(String noteId, Integer isImportBalance) {
+    public void unfreeze(Note note) {
 
         // 读取上一条日统计数据，得知从什么时候冻结的
-        DayStatistics lastDayStatistics = dayStatisticsService.findFirstByNoteIdOrderByDtDesc(noteId);
+        DayStatistics lastDayStatistics = dayStatisticsService.findFirstByNoteIdOrderByDtDesc(note.getNoteId());
         Date lastDate = lastDayStatistics.getDt();
-        Note note = noteDao.findById(noteId).get();
 
         // 如果是同一个月，修改账本余额和动态日预算，创建今日日统计数据
         if(DateUtils.isSameMonth(new Date(), lastDate)){
-            note = sameMonthUnfreeze(isImportBalance, lastDate, note);
+            note = sameMonthUnfreeze(lastDate, note);
 
         } else { // 如果不是同一个月
 
             // 生成冻结当月的月统计数据（如果没有的话）
             Date monthFirst = DateUtils.monthFirstDay(lastDate);
-            MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(noteId, monthFirst);
+            Date monthLast = DateUtils.monthLastDay(lastDate);
+            MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), monthFirst);
             // 如果冻结时间所在月没有统计数据
             if(monthStatistics == null) {
                 monthStatistics = new MonthStatistics();
@@ -110,9 +109,11 @@ public class NoteServiceImpl implements NoteService{
                 // 月份天数
                 int monthDays = DateUtils.monthDays(lastDate);
                 // 记账天数
-                int monthDaysReal = DateUtils.diff(lastDate, monthFirst) + 1;
+                List<DayStatistics> monthDaysRealList = dayStatisticsService.
+                        findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthFirst, monthLast);
+                int monthDaysReal = monthDaysRealList.size();
                 // 当月花费 = 总日预算 - 账本余额
-                monthStatistics.setMonthSpending(note.getMonthBudget().multiply(BigDecimal.valueOf(monthDays))
+                monthStatistics.setMonthSpending(note.getDayBudget().multiply(BigDecimal.valueOf(monthDays))
                         .subtract(note.getBalance()));
                 // 当月预算 = 记账天数 * 日预算
                 monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(monthDaysReal)));
@@ -122,19 +123,15 @@ public class NoteServiceImpl implements NoteService{
                 monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal)));
                 monthStatistics.setNoteId(note.getNoteId());
                 // 是否清零，0 将本月超支或省下的钱转结到下月 1 清零
-                monthStatistics.setIsClear(isImportBalance);
+                monthStatistics.setIsClear(1);
                 monthStatisticsService.save(monthStatistics);
+                note.setMonthStatisticsState(0);
             }
 
             // 根据是否继承余额，更新账本信息
             int days = DateUtils.dayToNextMonth(new Date());
             BigDecimal balance = note.getDayBudget().multiply(BigDecimal.valueOf(days));
-            if(isImportBalance == 1) {
-                balance = balance.add(monthStatistics.getBalance());
-            }
             note.setBalance(balance);
-            note.setStatus(1);
-            note.setDaysWithoutOperation(0);
         }
 
         // 保存账本数据
@@ -163,18 +160,12 @@ public class NoteServiceImpl implements NoteService{
         return null;
     }
 
-    private Note sameMonthUnfreeze(Integer isImportBalance, Date lastDate, Note note) {
+    private Note sameMonthUnfreeze(Date lastDate, Note note) {
         Date startDt = DateUtils.addDay(lastDate,1);
         Date endDt = DateUtils.toDaySdf(new Date());
         int days = DateUtils.diff(startDt, endDt);
-        // 如果继承余额
-        if(isImportBalance == 1) {
-            // 设定账本：当前余额 = 之前的余额 - 日花费 * 没记账的天数
-            note.setBalance(note.getBalance().subtract(note.getDayBudget().multiply(BigDecimal.valueOf(days))));
-        } else { // 如果不继承余额
-            int dayToNextMonth = DateUtils.dayToNextMonth(DateUtils.currMonthFirstDay());
-            note.setBalance(note.getDayBudget().multiply(BigDecimal.valueOf(dayToNextMonth)));
-        }
+        // 设定账本：当前余额 = 之前的余额 - 日花费 * 没记账的天数
+        note.setBalance(note.getBalance().subtract(note.getDayBudget().multiply(BigDecimal.valueOf(days))));
         return note;
     }
 

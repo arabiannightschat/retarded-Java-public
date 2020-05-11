@@ -16,4 +16,6 @@ public interface DayStatisticsDao extends JpaRepository<DayStatistics, String>{
     List<DayStatistics> findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(String noteId, Date dt);
 
     List<DayStatistics> findByNoteIdOrderByDtDesc(String noteId);
+
+    List<DayStatistics> findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(String noteId, Date monthFirst, Date monthLast);
 }

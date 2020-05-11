@@ -69,6 +69,7 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
         map.put("daySpending", daySpending);
         map.put("dayBudget", dayBudget);
         map.put("dynamicDayBudget", dynamicDayBudget);
+        map.put("note", note);
         return map;
     }
 
@@ -116,6 +117,11 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
         Date startDt = DateUtils.addDay(DateUtils.toDaySdf(new Date()), freezeDaysWithoutOperation*(-1) );
         List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(noteId, startDt);
         dayStatisticsDao.deleteAll(list);
+    }
+
+    @Override
+    public List<DayStatistics> findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(String noteId, Date monthFirst, Date monthLast) {
+        return dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(noteId, monthFirst, monthLast);
     }
 
 
