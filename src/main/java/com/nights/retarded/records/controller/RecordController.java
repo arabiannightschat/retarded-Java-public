@@ -39,7 +39,7 @@ public class RecordController extends BaseController {
 	    if(dt == null) {
 	        dt = new Date();
         }
-        recordService.addRecord(recordTypeId, money, description, dt, getOpenId());
+        recordService.addRecord(recordTypeId, money, description, dt, getCurrNoteId());
         return Success();
     }
 

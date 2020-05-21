@@ -32,7 +32,7 @@ public class DayStatistics implements Serializable {
 
 	@Column(name="dt")
 	@Temporal(TemporalType.DATE)
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
 	private Date dt;
 
 	@Column(name="day_spending")

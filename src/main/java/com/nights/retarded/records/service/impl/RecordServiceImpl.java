@@ -51,7 +51,7 @@ public class RecordServiceImpl implements RecordService{
         }
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
-        Date startTime = DateUtils.addDay(now, -5);
+        Date startTime = DateUtils.addDay(now, -25);
         List<Record> list = recordDao.findByNoteIdAndDtBetweenOrderByDtDesc(note.getNoteId(), startTime, now);
 
         Map<String, RecordsType> typesMap = new HashMap<>();
@@ -115,13 +115,13 @@ public class RecordServiceImpl implements RecordService{
     }
 
     @Override
-    public void addRecord(String recordTypeId, BigDecimal money, String description, Date dt, String openId) {
+    public void addRecord(String recordTypeId, BigDecimal money, String description, Date dt, String noteId) {
 
 	    // 格式化时间
 	    dt = DateUtils.toDaySdf(dt);
 	    // 带符号支出金额
         RecordsType type = recordsTypeService.findById(recordTypeId);
-        Note note = noteService.getCurrNote(openId);
+        Note note = noteService.findById(noteId);
         BigDecimal moneySign = money.multiply(BigDecimal.valueOf(type.getType() == 0 ? 1 : -1));
         Record record = packageRecord(recordTypeId, money, description, dt, type, note);
         recordDao.save(record);
@@ -139,7 +139,7 @@ public class RecordServiceImpl implements RecordService{
     }
 
     private void editDayStatAndNote(Date dt, Note note, BigDecimal moneySign) {
-        // 更新日统计数据(指定日期后的数据都会受到影响)
+        // 更新日统计数据 ( 指定日期后的数据都会受到影响 )
         BigDecimal nextDynamicDayBudget = null;
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
         for(int i = 0; i < dayStatisticsList.size() ; i++){
@@ -178,6 +178,7 @@ public class RecordServiceImpl implements RecordService{
     }
 
     // 动态日预算 = 余额 / 本月剩余天数; 日预算 = 月预算 / 30
+    // （不算今天的）
     public BigDecimal getDynamicDayBudget(Date dt, BigDecimal balance){
         int dayToNextMonth = DateUtils.dayToNextMonth(dt) - 1;
         if(dayToNextMonth == 0) {
@@ -186,6 +187,7 @@ public class RecordServiceImpl implements RecordService{
         return balance.divide(BigDecimal.valueOf(dayToNextMonth), 2, BigDecimal.ROUND_HALF_UP);
     }
 
+    //（算今天的）
     @Override
     public BigDecimal getDynamicDayBudgetTask(Date date, BigDecimal balance) {
         int dayToNextMonth = DateUtils.dayToNextMonth(date);

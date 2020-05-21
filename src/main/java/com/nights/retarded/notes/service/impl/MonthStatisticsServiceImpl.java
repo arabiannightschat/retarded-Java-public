@@ -1,12 +1,14 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
+import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.notes.model.DayStatistics;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.service.DayStatisticsService;
@@ -45,7 +47,7 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
 
     @Override
     public MonthStatistics getLastMonthStatistics(String noteId) {
-        return monthStatisticsDao.findByNoteIdAndDt(noteId, DateUtils.lastMonthFirstDay());
+        return JsonUtils.getIndexZero(monthStatisticsDao.findByNoteIdOrderByDtDesc(noteId));
     }
 
     @Override
@@ -56,21 +58,10 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
             MonthStatistics monthStatistics = getLastMonthStatistics(noteId);
             monthStatistics.setIsClear(0);
             monthStatisticsDao.save(monthStatistics);
-            note.setBalance(note.getBalance().add(monthStatistics.getBalance()));
-            note.setDynamicDayBudget(recordService.getDynamicDayBudget(new Date(), note.getBalance()));
-            // 处理本月已生成的日统计数据，将上月结余或欠款加上，重新计算余额和日动态预算
-            List<DayStatistics> dayStatisticsList = dayStatisticsService.
-                        findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), DateUtils.currMonthFirstDay());
-            BigDecimal nextDynamicDayBudget = null;
-            for(int i = 0; i < dayStatisticsList.size() ; i++){
-                DayStatistics dayStatistics = dayStatisticsList.get(i);
-                dayStatistics.setBalance(dayStatistics.getBalance().add(monthStatistics.getBalance()));
-                if(i > 0){
-                    dayStatistics.setDynamicDayBudget(nextDynamicDayBudget);
-                }
-                nextDynamicDayBudget = recordService.getDynamicDayBudget(dayStatistics.getDt(), dayStatistics.getBalance());
-                dayStatisticsService.save(dayStatistics);
-            }
+            int month = DateUtils.getMonth(DateUtils.monthFirstDay(monthStatistics.getDt()));
+            recordService.addRecord("8a44deb8d83111e89d4100163e02uuuu", monthStatistics.getBalance(),
+                    month + "月余额结转", DateUtils.monthFirstDay(new Date()), noteId);
+
         }
         // 标记为已处理
         note.setMonthStatisticsState(1);

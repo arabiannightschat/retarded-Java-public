@@ -90,55 +90,35 @@ public class NoteServiceImpl implements NoteService{
         // 读取上一条日统计数据，得知从什么时候冻结的
         DayStatistics lastDayStatistics = dayStatisticsService.findFirstByNoteIdOrderByDtDesc(note.getNoteId());
         Date lastDate = lastDayStatistics.getDt();
+        Date now = DateUtils.toDaySdf(new Date());
 
-        // 如果是同一个月，修改账本余额和动态日预算，创建今日日统计数据
+        // 如果是同一个月，默认没记账的日子里按预算花费
         if(DateUtils.isSameMonth(new Date(), lastDate)){
-            note = sameMonthUnfreeze(lastDate, note);
-
-        } else { // 如果不是同一个月
-
-            // 生成冻结当月的月统计数据（如果没有的话）
-            Date monthFirst = DateUtils.monthFirstDay(lastDate);
-            Date monthLast = DateUtils.monthLastDay(lastDate);
-            MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), monthFirst);
-            // 如果冻结时间所在月没有统计数据
-            if(monthStatistics == null) {
-                monthStatistics = new MonthStatistics();
-                // 写入上个月的月统计数据
-                monthStatistics.setDt(monthFirst);
-                // 月份天数
-                int monthDays = DateUtils.monthDays(lastDate);
-                // 记账天数
-                List<DayStatistics> monthDaysRealList = dayStatisticsService.
-                        findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthFirst, monthLast);
-                int monthDaysReal = monthDaysRealList.size();
-                // 当月花费 = 总日预算 - 账本余额
-                monthStatistics.setMonthSpending(note.getDayBudget().multiply(BigDecimal.valueOf(monthDays))
-                        .subtract(note.getBalance()));
-                // 当月预算 = 记账天数 * 日预算
-                monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(monthDaysReal)));
-                // 当月余额 = 当月预算 - 当月花费
-                monthStatistics.setBalance(monthStatistics.getMonthBudget().subtract(monthStatistics.getMonthSpending()));
-                // 平均日花销 = 当月花费 / 记账天数
-                monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal)));
-                monthStatistics.setNoteId(note.getNoteId());
-                // 是否清零，0 将本月超支或省下的钱转结到下月 1 清零
-                monthStatistics.setIsClear(1);
-                monthStatisticsService.save(monthStatistics);
-                note.setMonthStatisticsState(0);
-            }
-
-            // 根据是否继承余额，更新账本信息
-            int days = DateUtils.dayToNextMonth(new Date());
-            BigDecimal balance = note.getDayBudget().multiply(BigDecimal.valueOf(days));
-            note.setBalance(balance);
+            spendAccordingToBudget(lastDate, now, note, lastDayStatistics);
+            note.setStatus(1);
+            noteDao.save(note);
+            return;
         }
 
-        // 保存账本数据
-        note.setStatus(1);
+        // 如果不是同一个月 1. 生成冻结当月的月统计数据（如果没有的话）2. 重置并解冻账本，置月结处理为未处理
+        Date monthFirst = DateUtils.monthFirstDay(lastDate);
+        Date monthLast = DateUtils.monthLastDay(lastDate);
+
+        // 生成冻结当月的月份统计数据
+        MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), monthFirst);
+        if(monthStatistics == null) {
+            createLastMonthStatistics(note, lastDate, monthFirst, monthLast);
+        }
+
+        // 更新账本信息
+        int days = DateUtils.dayToNextMonth(new Date());
+        BigDecimal balance = note.getDayBudget().multiply(BigDecimal.valueOf(days));
+        note.setBalance(balance);
         // 设定明天的动态日预算 = 当前余额 / 到月底剩余天数（不算今天的）
         note.setDynamicDayBudget(recordService.getDynamicDayBudget(new Date(), note.getBalance()));
         note.setDaysWithoutOperation(0);
+        note.setMonthStatisticsState(0);
+        note.setStatus(1);
         noteDao.save(note);
 
         // 创建今日日统计数据
@@ -147,6 +127,40 @@ public class NoteServiceImpl implements NoteService{
         dayStatistics.setDynamicDayBudget(recordService.getDynamicDayBudgetTask(new Date(), note.getBalance()));
         dayStatisticsService.save(dayStatistics);
 
+    }
+
+    /**
+     * 创建冻结时的月份数据统计
+     * @param note
+     * @param lastDate
+     * @param monthFirst
+     * @param monthLast
+     */
+    private void createLastMonthStatistics(Note note, Date lastDate, Date monthFirst, Date monthLast) {
+        MonthStatistics monthStatistics;
+        monthStatistics = new MonthStatistics();
+        // 写入上个月的月统计数据
+        monthStatistics.setDt(monthFirst);
+        // 月份天数
+        int monthDays = DateUtils.monthDays(lastDate);
+        // 记账天数
+        List<DayStatistics> monthDaysRealList = dayStatisticsService.
+                findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthFirst, monthLast);
+        int monthDaysReal = monthDaysRealList.size();
+        // 当月花费 = 总日预算 - 账本余额
+        monthStatistics.setMonthSpending(note.getDayBudget().multiply(BigDecimal.valueOf(monthDays))
+                .subtract(note.getBalance()));
+        // 当月预算 = 记账天数 * 日预算
+        monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(monthDaysReal)));
+        // 当月余额 = 当月预算 - 当月花费
+        monthStatistics.setBalance(monthStatistics.getMonthBudget().subtract(monthStatistics.getMonthSpending()));
+        // 平均日花销 = 当月花费 / 记账天数
+        monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal)));
+        monthStatistics.setNoteId(note.getNoteId());
+        // 是否清零，0 将本月超支或省下的钱转结到下月 1 清零
+        monthStatistics.setIsClear(1);
+        monthStatisticsService.save(monthStatistics);
+        note.setMonthStatisticsState(0);
     }
 
     @Override
@@ -160,13 +174,26 @@ public class NoteServiceImpl implements NoteService{
         return null;
     }
 
-    private Note sameMonthUnfreeze(Date lastDate, Note note) {
-        Date startDt = DateUtils.addDay(lastDate,1);
-        Date endDt = DateUtils.toDaySdf(new Date());
-        int days = DateUtils.diff(startDt, endDt);
-        // 设定账本：当前余额 = 之前的余额 - 日花费 * 没记账的天数
-        note.setBalance(note.getBalance().subtract(note.getDayBudget().multiply(BigDecimal.valueOf(days))));
-        return note;
+    private void spendAccordingToBudget(Date lastDate, Date now, Note note, DayStatistics lastDayStatistics) {
+
+        // 没记账的日子补充日统计数据
+        for(Date date = DateUtils.addDay(lastDate, 1); date.getTime() <= now.getTime(); date = DateUtils.addDay(date, 1)){
+            DayStatistics dayStatistics = dayStatisticsService.initDayStatistics(note);
+            dayStatistics.setDt(date);
+            if(date.getTime() == DateUtils.addDay(lastDate, 1).getTime()){
+                dayStatistics.setDynamicDayBudget(recordService.getDynamicDayBudget(lastDayStatistics.getDt(), lastDayStatistics.getBalance()));
+            } else {
+                dayStatistics.setDynamicDayBudget(null);
+            }
+            dayStatisticsService.save(dayStatistics);
+        }
+        for(Date date = DateUtils.addDay(lastDate, 1); date.getTime() <= now.getTime(); date = DateUtils.addDay(date, 1)){
+            // 把没记账的日子里都填充上系统记账记录
+            if(date.getTime() < now.getTime()){
+                recordService.addRecord("8a44deb8d83111e89d4100163e02ppoo",
+                        note.getDayBudget(), "冻结期间自动填充", date, note.getNoteId());
+            }
+        }
     }
 
 }
