@@ -9,6 +9,7 @@ import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.service.NoteService;
+import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nights.retarded.notes.model.DayStatistics;
@@ -24,6 +25,9 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
 	@Autowired
     private NoteService noteService;
 
+	@Autowired
+    private RecordService recordService;
+
 	@Override
 	public List<DayStatistics> getAll() {
 		return this.dayStatisticsDao.findAll();
@@ -31,16 +35,20 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
 
     @Override
     public Map getRecentData(String openId) {
+        Map<String, Object> map = new HashMap<>();
 	    // 获取基本信息
-        Note note = noteService.getCurrNote(openId);
+        Note note = noteService.getCurrNoteContainFreeze(openId);
         if(note == null) {
             return null;
+        }
+        if(note.getStatus() == 0) {
+            map.put("note", note);
+            return map;
         }
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
         Date startTime = DateUtils.addDay(now, -5);
         List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtBetweenOrderByDtAsc(note.getNoteId(), startTime, now);
-        Map<String, Object> map = new HashMap<>();
         map.put("balance", note.getBalance());
         map.put("dayToNextMonth",DateUtils.dayToNextMonth(new Date()));
         map.put("year", DateUtils.getYear(new Date()));
@@ -70,6 +78,8 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
         map.put("dayBudget", dayBudget);
         map.put("dynamicDayBudget", dynamicDayBudget);
         map.put("note", note);
+        map.put("recentRecords", recordService.getRecentRecords(note));
+
         return map;
     }
 

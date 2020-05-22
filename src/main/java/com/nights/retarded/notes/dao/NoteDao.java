@@ -11,4 +11,6 @@ public interface NoteDao extends JpaRepository<Note, String>{
     List<Note> findByStatus(int i);
 
     List<Note> findByOpenIdAndStatusOrderByCreateDtDesc(String openId, int i);
+
+    List<Note> findByOpenIdOrderByCreateDtDesc(String openId);
 }

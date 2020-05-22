@@ -43,13 +43,8 @@ public class NoteController extends BaseController {
      */
     @PostMapping("unfreeze")
     public Map unfreeze(){
-	    noteService.unfreeze(noteService.getFreezeNote(getOpenId()));
+	    noteService.unfreeze(noteService.getCurrNoteContainFreeze(getOpenId()));
 	    return Success();
-    }
-
-    @GetMapping("getFreezeNote")
-    public Map getFreezeNote(){
-        return Success(noteService.getFreezeNote(getOpenId()));
     }
 
 }

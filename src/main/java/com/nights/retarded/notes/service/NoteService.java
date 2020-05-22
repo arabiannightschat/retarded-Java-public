@@ -21,5 +21,5 @@ public interface NoteService {
 
     void unfreeze(Note noteId);
 
-    Note getFreezeNote(String openId);
+    Note getCurrNoteContainFreeze(String openId);
 }

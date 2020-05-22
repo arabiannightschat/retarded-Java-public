@@ -16,7 +16,6 @@ import com.nights.retarded.records.model.RecentRecords;
 import com.nights.retarded.records.model.RecordVO;
 import com.nights.retarded.records.model.RecordsType;
 import com.nights.retarded.records.service.RecordsTypeService;
-import org.hibernate.id.BulkInsertionCapableIdentifierGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nights.retarded.records.model.Record;
@@ -44,14 +43,13 @@ public class RecordServiceImpl implements RecordService{
 	}
 
     @Override
-    public List<RecentRecords> getRecentRecords(String openId) {
-        Note note = noteService.getCurrNote(openId);
+    public List<RecentRecords> getRecentRecords(Note note) {
         if(note == null) {
             return null;
         }
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
-        Date startTime = DateUtils.addDay(now, -25);
+        Date startTime = DateUtils.addDay(now, -5);
         List<Record> list = recordDao.findByNoteIdAndDtBetweenOrderByDtDesc(note.getNoteId(), startTime, now);
 
         Map<String, RecordsType> typesMap = new HashMap<>();

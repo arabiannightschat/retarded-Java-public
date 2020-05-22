@@ -29,11 +29,6 @@ public class RecordController extends BaseController {
 		return JsonUtils.objectToJson(recordService.getAll());
 	}
 
-	@GetMapping("getRecentRecords")
-    public Map getRecentRecords(){
-        return Success(recordService.getRecentRecords(getOpenId()));
-    }
-
     @PostMapping("addRecord")
     public Map addRecord(String recordTypeId, BigDecimal money, String description, @RequestParam(required = false) Date dt){
 	    if(dt == null) {
