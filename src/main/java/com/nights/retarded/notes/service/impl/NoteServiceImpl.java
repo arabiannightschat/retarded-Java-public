@@ -147,13 +147,12 @@ public class NoteServiceImpl implements NoteService{
         List<DayStatistics> monthDaysRealList = dayStatisticsService.
                 findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthFirst, monthLast);
         int monthDaysReal = monthDaysRealList.size();
-        // 当月花费 = 总日预算 - 账本余额
-        monthStatistics.setMonthSpending(note.getDayBudget().multiply(BigDecimal.valueOf(monthDays))
-                .subtract(note.getBalance()));
         // 当月预算 = 记账天数 * 日预算
         monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(monthDaysReal)));
+        // 当月花费 = 当月预算 - 账本余额
+        monthStatistics.setMonthSpending(monthStatistics.getMonthBudget().subtract(note.getBalance()));
         // 当月余额 = 当月预算 - 当月花费
-        monthStatistics.setBalance(monthStatistics.getMonthBudget().subtract(monthStatistics.getMonthSpending()));
+        monthStatistics.setBalance(note.getBalance());
         // 平均日花销 = 当月花费 / 记账天数
         monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal)));
         monthStatistics.setNoteId(note.getNoteId());

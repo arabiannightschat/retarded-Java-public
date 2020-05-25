@@ -33,11 +33,14 @@ public class UserServiceImpl implements UserService{
 	public void addUserInfo(String openId, String userInfo) {
 		User user = JsonUtils.jsonToClass(userInfo, User.class);
 		User dbUser = userDao.findByOpenId(openId);
-		user.setCreateDt(dbUser.getCreateDt());
-		user.setLastLoginTime(dbUser.getLastLoginTime());
-		user.setLoginCount(dbUser.getLoginCount());
-		user.setOpenId(openId);
-		userDao.save(user);
+		dbUser.setAvatarUrl(user.getAvatarUrl());
+		dbUser.setCountry(user.getCountry());
+        dbUser.setProvince(user.getProvince());
+        dbUser.setCity(user.getCity());
+        dbUser.setGender(user.getGender());
+        dbUser.setLanguage(user.getLanguage());
+		dbUser.setNickName(user.getNickName());
+		userDao.save(dbUser);
 	}
 
 	@Override

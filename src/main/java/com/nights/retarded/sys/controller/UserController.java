@@ -23,7 +23,7 @@ public class UserController {
 	private UserService userService;
 	
 	@ApiOperation(value="追加用户信息")
-	@RequestMapping(value = "addUserInfo", method = RequestMethod.GET)
+	@RequestMapping(value = "addUserInfo", method = RequestMethod.POST)
 	public void addUserInfo(HttpServletRequest request,String userInfo) {
 		String openId = JsonUtils.requestToOpenId(request);
 		userService.addUserInfo(openId,userInfo);
