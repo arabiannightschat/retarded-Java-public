@@ -12,4 +12,6 @@ public interface RecordDao extends JpaRepository<Record, String>{
     List<Record> findByNoteIdAndDtBetweenOrderByDtDesc(String noteId, Date startTime, Date now);
 
     int countByNoteIdAndDt(String noteId, Date yesterday);
+
+    int countByNoteIdAndDtLessThanEqual(String currNoteId, Date startTime);
 }

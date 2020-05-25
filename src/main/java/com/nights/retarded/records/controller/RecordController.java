@@ -43,4 +43,9 @@ public class RecordController extends BaseController {
 	    recordService.delRecord(recordId);
 	    return Success();
     }
+
+    @GetMapping("recordsLoading")
+    public Map recordsLoading(int recordsLoadingCount) {
+	    return Success(recordService.recordsLoading(recordsLoadingCount, getCurrNoteId()));
+    }
 }

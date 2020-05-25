@@ -31,6 +31,8 @@ public class RecordServiceImpl implements RecordService{
 	@Autowired
     private RecordsTypeService recordsTypeService;
 
+	private static final int recentDays = 10;
+
 	@Autowired
     private NoteService noteService;
 
@@ -47,10 +49,41 @@ public class RecordServiceImpl implements RecordService{
         if(note == null) {
             return null;
         }
-        Date now = new Date();
-        now = DateUtils.toDaySdf(now);
-        Date startTime = DateUtils.addDay(now, -5);
-        List<Record> list = recordDao.findByNoteIdAndDtBetweenOrderByDtDesc(note.getNoteId(), startTime, now);
+        Date now = DateUtils.toDaySdf(new Date());
+        Date startTime = DateUtils.addDay(now, (-1) * recentDays);
+        return getRecentRecords(note.getNoteId(), startTime, now);
+    }
+
+    @Override
+    public Map recordsLoading(int recordsLoadingCount, String currNoteId) {
+
+        Map<String, Object> result = new HashMap<>();
+        if(recordsLoadingCount > 20){
+            result.put("tooLong", true);
+        }
+        if(StringUtils.isBlank(currNoteId)){
+            return null;
+        }
+        Date now = DateUtils.toDaySdf(new Date());
+        Date endTime = DateUtils.addDay(now, (recordsLoadingCount * (-1) * recentDays) - 1);
+        Date startTime = DateUtils.addDay(endTime, (-1) * recentDays);
+        List<RecentRecords> list = getRecentRecords(currNoteId, startTime, endTime);
+        if(list.size() == 0) {
+            int count = recordDao.countByNoteIdAndDtLessThanEqual(currNoteId, startTime);
+            if(count == 0) {
+                result.put("noMore", true);
+                return result;
+            } else {
+                return recordsLoading(recordsLoadingCount + 1, currNoteId);
+            }
+        }
+        result.put("list", list);
+        result.put("recordsLoadingCount", recordsLoadingCount);
+        return result;
+    }
+
+    private List<RecentRecords> getRecentRecords(String noteId, Date startTime, Date endTime) {
+        List<Record> list = recordDao.findByNoteIdAndDtBetweenOrderByDtDesc(noteId, startTime, endTime);
 
         Map<String, RecordsType> typesMap = new HashMap<>();
 
@@ -199,6 +232,5 @@ public class RecordServiceImpl implements RecordService{
     public int countByNoteIdAndDt(String noteId, Date yesterday) {
         return recordDao.countByNoteIdAndDt(noteId, yesterday);
     }
-
 
 }
