@@ -1,9 +1,7 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -72,6 +70,40 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
     @Override
     public MonthStatistics findByNoteIdAndDt(String noteId, Date monthFirst) {
         return monthStatisticsDao.findByNoteIdAndDt(noteId, monthFirst);
+    }
+
+    @Override
+    public Map<String, Object> getMonthStatistics(Date monthDate, String currNoteId) {
+
+        Date monthFirstDay = DateUtils.monthFirstDay(monthDate);
+        Date monthLastDay = DateUtils.monthLastDay(monthDate);
+        Map<String, Object> result = new HashMap<>();
+
+        // 获取月份统计数据
+        MonthStatistics monthStatistics = monthStatisticsDao.findByNoteIdAndDt(currNoteId, monthFirstDay);
+
+        if(monthStatistics == null) {
+            monthStatistics = noteService.statMonthStatistics(noteService.findById(currNoteId), monthFirstDay, monthLastDay);
+        }
+        result.put("monthStatistics", monthStatistics);
+
+        // 获取日统计数据列表
+        List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(
+                currNoteId, monthFirstDay, monthLastDay);
+        // 获取图表信息
+        List<String> categories = new ArrayList<>();
+        List<BigDecimal> daySpending = new ArrayList<>();
+        List<BigDecimal> dayBudget = new ArrayList<>();
+        for(DayStatistics dayStatistics : dayStatisticsList) {
+            String date = DateUtils.toCategoriesDay(dayStatistics.getDt());
+            categories.add(date);
+            daySpending.add(dayStatistics.getDaySpending());
+            dayBudget.add(dayStatistics.getDayBudget());
+        }
+        result.put("categories", categories);
+        result.put("daySpending", daySpending);
+        result.put("dayBudget", dayBudget);
+        return result;
     }
 
 }

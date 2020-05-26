@@ -52,6 +52,11 @@ public class DateUtils {
         return sdf.format(date);
     }
 
+    public static String toCategoriesDay(Date dt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("d");
+        return sdf.format(dt);
+    }
+
     public static String getDayOfWeekChinese(Date date) {
         String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
         Calendar cal = Calendar.getInstance();

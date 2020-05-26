@@ -131,7 +131,7 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
 
     @Override
     public List<DayStatistics> findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(String noteId, Date monthFirst, Date monthLast) {
-        return dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(noteId, monthFirst, monthLast);
+        return dayStatisticsDao.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqualOrderByDtAsc(noteId, monthFirst, monthLast);
     }
 
 

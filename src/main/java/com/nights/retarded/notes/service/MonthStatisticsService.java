@@ -2,9 +2,9 @@ package com.nights.retarded.notes.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.nights.retarded.notes.model.MonthStatistics;
-import com.nights.retarded.notes.model.Note;
 
 public interface MonthStatisticsService {
 
@@ -17,4 +17,6 @@ public interface MonthStatisticsService {
     void importLastMonthBalance(String noteId, Integer isImport);
 
     MonthStatistics findByNoteIdAndDt(String noteId, Date monthFirst);
+
+    Map<String, Object> getMonthStatistics(Date monthDate, String currNoteId);
 }

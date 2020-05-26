@@ -137,12 +137,15 @@ public class NoteServiceImpl implements NoteService{
      * @param monthLast
      */
     private void createLastMonthStatistics(Note note, Date lastDate, Date monthFirst, Date monthLast) {
-        MonthStatistics monthStatistics;
-        monthStatistics = new MonthStatistics();
+        MonthStatistics monthStatistics = statMonthStatistics(note, monthFirst, monthLast);
+        monthStatisticsService.save(monthStatistics);
+        note.setMonthStatisticsState(0);
+    }
+
+    public MonthStatistics statMonthStatistics(Note note, Date monthFirst, Date monthLast) {
+        MonthStatistics monthStatistics = new MonthStatistics();
         // 写入上个月的月统计数据
         monthStatistics.setDt(monthFirst);
-        // 月份天数
-        int monthDays = DateUtils.monthDays(lastDate);
         // 记账天数
         List<DayStatistics> monthDaysRealList = dayStatisticsService.
                 findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthFirst, monthLast);
@@ -158,8 +161,7 @@ public class NoteServiceImpl implements NoteService{
         monthStatistics.setNoteId(note.getNoteId());
         // 是否清零，0 将本月超支或省下的钱转结到下月 1 清零
         monthStatistics.setIsClear(1);
-        monthStatisticsService.save(monthStatistics);
-        note.setMonthStatisticsState(0);
+        return monthStatistics;
     }
 
     @Override

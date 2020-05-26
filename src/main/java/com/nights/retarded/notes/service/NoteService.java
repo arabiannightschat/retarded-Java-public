@@ -1,8 +1,10 @@
 package com.nights.retarded.notes.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
+import com.nights.retarded.notes.model.MonthStatistics;
 import com.nights.retarded.notes.model.Note;
 
 public interface NoteService {
@@ -22,4 +24,6 @@ public interface NoteService {
     void unfreeze(Note noteId);
 
     Note getCurrNoteContainFreeze(String openId);
+
+    MonthStatistics statMonthStatistics(Note note, Date monthFirst, Date monthLast);
 }

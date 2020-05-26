@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.nights.retarded.base.BaseController;
 import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.notes.model.MonthStatistics;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import com.nights.retarded.common.utils.JsonUtils;
@@ -12,6 +14,7 @@ import com.nights.retarded.notes.service.MonthStatisticsService;
 
 import io.swagger.annotations.ApiOperation;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +33,10 @@ public class MonthStatisticsController extends BaseController {
 		return Success(monthStatisticsService.getAll());
 	}
 
+    /**
+     * 用于月结算展示
+     * @return
+     */
 	@GetMapping("getLastMonthStatistics")
     public Map getLastMonthStatistics(){
 	    Map<String, Object> map = new HashMap<>();
@@ -46,5 +53,20 @@ public class MonthStatisticsController extends BaseController {
     public Map importLastMonthBalance(Integer isImport){
 	    monthStatisticsService.importLastMonthBalance(getCurrNoteId(), isImport);
 	    return Success();
+    }
+
+    /**
+     * 用于统计页
+     */
+    @GetMapping("getMonthStatistics")
+    public Map getMonthStatistics(Date monthDate){
+        return Success(monthStatisticsService.getMonthStatistics(monthDate, getCurrNoteId()));
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        //转换日期
+        DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));// CustomDateEditor为自定义日期编辑器
     }
 }
