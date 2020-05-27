@@ -1,6 +1,7 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -157,7 +158,7 @@ public class NoteServiceImpl implements NoteService{
         // 当月余额 = 当月预算 - 当月花费
         monthStatistics.setBalance(note.getBalance());
         // 平均日花销 = 当月花费 / 记账天数
-        monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal)));
+        monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal), 2, BigDecimal.ROUND_HALF_UP));
         monthStatistics.setNoteId(note.getNoteId());
         // 是否清零，0 将本月超支或省下的钱转结到下月 1 清零
         monthStatistics.setIsClear(1);
