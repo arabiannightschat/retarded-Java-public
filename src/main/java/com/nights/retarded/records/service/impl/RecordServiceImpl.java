@@ -170,6 +170,20 @@ public class RecordServiceImpl implements RecordService{
     }
 
     private void editDayStatAndNote(Date dt, Note note, BigDecimal moneySign) {
+
+	    // 如果是当月记账，更新往后的日统计数据，更新账本余额和动态日预算即可
+        int nowMonth = DateUtils.getMonth(new Date());
+        int recordMonth = DateUtils.getMonth(dt);
+        if(nowMonth == recordMonth) {
+
+            // TODO
+
+        } else {
+            // 如果不是当月记账，需处理月统计数据，且根据月统计是否转结决定后面的日统计数据要不要改变 TODO
+
+
+        }
+
         // 更新日统计数据 ( 指定日期后的数据都会受到影响 )
         BigDecimal nextDynamicDayBudget = null;
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
