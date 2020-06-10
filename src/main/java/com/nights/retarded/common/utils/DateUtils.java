@@ -14,6 +14,13 @@ public class DateUtils {
         return c.getTime();
 	}
 
+    public static Date addMonth(Date date, int month) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(Calendar.MONTH, month);
+        return c.getTime();
+    }
+
     public static final SimpleDateFormat daySdf = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat daySdf2 = new SimpleDateFormat("yyyyMMdd");
 
@@ -47,6 +54,12 @@ public class DateUtils {
         return c.get(Calendar.MONTH) + 1;
     }
 
+    public static int getDayOfMonth(Date date) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return c.get(Calendar.DAY_OF_MONTH) + 1;
+    }
+
     public static String toCategories(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("M-dd");
         return sdf.format(date);
@@ -72,6 +85,9 @@ public class DateUtils {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
         return c.getTime();
     }
 
@@ -80,6 +96,9 @@ public class DateUtils {
         c.setTime(new Date());
         c.add(Calendar.MONTH, -1);
         c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
         return c.getTime();
     }
 
@@ -87,6 +106,9 @@ public class DateUtils {
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
         c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
         return c.getTime();
     }
 
@@ -115,4 +137,15 @@ public class DateUtils {
         c.set(Calendar.DAY_OF_MONTH, monthDays(dt));
         return c.getTime();
     }
+
+    public static boolean isEqual( Date date1 ,Date date2) {
+	    if(date1 == null || date2 == null) {
+	        return false;
+        }
+	    if(date1.getTime() == date2.getTime()){
+	        return true;
+        }
+        return false;
+    }
+
 }

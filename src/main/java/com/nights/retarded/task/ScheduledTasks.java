@@ -75,8 +75,10 @@ public class ScheduledTasks {
             monthStatistics.setBalance(note.getBalance());
 
             // 获取平均日花销
-            int monthDays = DateUtils.monthDays(monthStatistics.getDt());
-            monthStatistics.setAvgDaySpending(note.getBalance().divide(BigDecimal.valueOf(monthDays),2, BigDecimal.ROUND_HALF_UP));
+            List<DayStatistics> monthDaysRealList = dayStatisticsService.
+                    findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthStatistics.getDt(), DateUtils.monthLastDay(monthStatistics.getDt()));
+            int monthDaysReal = monthDaysRealList.size();
+            monthStatistics.setAvgDaySpending(note.getBalance().divide(BigDecimal.valueOf(monthDaysReal),2, BigDecimal.ROUND_HALF_UP));
             monthStatistics.setMonthBudget(note.getMonthBudget());
             monthStatistics.setMonthSpending(monthStatistics.getMonthBudget().subtract(monthStatistics.getBalance()));
             monthStatistics.setNoteId(note.getNoteId());

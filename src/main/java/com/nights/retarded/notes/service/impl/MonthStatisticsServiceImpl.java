@@ -11,6 +11,7 @@ import com.nights.retarded.notes.model.DayStatistics;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
+import com.nights.retarded.records.model.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
             monthStatistics.setIsClear(0);
             monthStatisticsDao.save(monthStatistics);
             int month = DateUtils.getMonth(DateUtils.monthFirstDay(monthStatistics.getDt()));
-            recordService.addRecord("8a44deb8d83111e89d4100163e02uuuu", monthStatistics.getBalance(),
+            recordService.addRecord(RecordsTypeEnum.SETTLE.getId(), monthStatistics.getBalance(),
                     month + "月余额结转", DateUtils.monthFirstDay(new Date()), noteId);
 
         }

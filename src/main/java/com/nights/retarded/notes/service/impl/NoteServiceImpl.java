@@ -13,6 +13,7 @@ import com.nights.retarded.notes.model.DayStatistics;
 import com.nights.retarded.notes.model.MonthStatistics;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.MonthStatisticsService;
+import com.nights.retarded.records.model.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -187,7 +188,7 @@ public class NoteServiceImpl implements NoteService{
         for(Date date = DateUtils.addDay(lastDate, 1); date.getTime() <= now.getTime(); date = DateUtils.addDay(date, 1)){
             // 把没记账的日子里都填充上系统记账记录
             if(date.getTime() < now.getTime()){
-                recordService.addRecord("8a44deb8d83111e89d4100163e02ppoo",
+                recordService.addRecord(RecordsTypeEnum.ELSE.getId(),
                         note.getDayBudget(), "冻结期间自动填充", date, note.getNoteId());
             }
         }

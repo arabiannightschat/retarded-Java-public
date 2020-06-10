@@ -2,23 +2,24 @@ package com.nights.retarded.records.service.impl;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.Month;
 import java.util.*;
 
 import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
+import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.common.utils.StringUtils;
 import com.nights.retarded.notes.model.DayStatistics;
+import com.nights.retarded.notes.model.MonthStatistics;
 import com.nights.retarded.notes.model.Note;
 import com.nights.retarded.notes.service.DayStatisticsService;
+import com.nights.retarded.notes.service.MonthStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
-import com.nights.retarded.records.model.RecentRecords;
-import com.nights.retarded.records.model.RecordVO;
-import com.nights.retarded.records.model.RecordsType;
+import com.nights.retarded.records.model.*;
 import com.nights.retarded.records.service.RecordsTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.nights.retarded.records.model.Record;
 import com.nights.retarded.records.dao.RecordDao;
 import com.nights.retarded.records.service.RecordService;
 
@@ -38,6 +39,9 @@ public class RecordServiceImpl implements RecordService{
 
 	@Autowired
     private DayStatisticsService dayStatisticsService;
+
+    @Autowired
+    private MonthStatisticsService monthStatisticsService;
 
 	@Override
 	public List<Record> getAll() {
@@ -163,6 +167,13 @@ public class RecordServiceImpl implements RecordService{
     public void delRecord(String recordId) {
         Record record = recordDao.findById(recordId).orElse(null);
         Note note = noteService.findById(record.getNoteId());
+        // 如果结算记录被删掉，上月月统计修改为已清零
+        if(RecordsTypeEnum.SETTLE.getId().equals(record.getTypeId())) {
+            MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(),
+                    DateUtils.monthFirstDay(DateUtils.addMonth(record.getDt(),-1)));
+            monthStatistics.setIsClear(1);
+            monthStatisticsService.save(monthStatistics);
+        }
         RecordsType type = recordsTypeService.findById(record.getTypeId());
         BigDecimal moneySign = record.getMoney().multiply(BigDecimal.valueOf(type.getType() == 0 ? -1 : 1));
         editDayStatAndNote(record.getDt(), note, moneySign);
@@ -171,40 +182,82 @@ public class RecordServiceImpl implements RecordService{
 
     private void editDayStatAndNote(Date dt, Note note, BigDecimal moneySign) {
 
-	    // 如果是当月记账，更新往后的日统计数据，更新账本余额和动态日预算即可
-        int nowMonth = DateUtils.getMonth(new Date());
-        int recordMonth = DateUtils.getMonth(dt);
-        if(nowMonth == recordMonth) {
+        // 更新日统计数据 ( 指定日期后的数据都会受到影响 )
+        List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
+        BigDecimal nextDynamicDayBudget = CalculateDayStatistics(dt, moneySign, dayStatisticsList, note.getNoteId());
 
-            // TODO
-
-        } else {
-            // 如果不是当月记账，需处理月统计数据，且根据月统计是否转结决定后面的日统计数据要不要改变 TODO
-
-
+        // 计算账本余额数据
+        note.setBalance(note.getBalance().subtract(moneySign));
+        if(nextDynamicDayBudget != null){
+            note.setDynamicDayBudget(nextDynamicDayBudget);
         }
 
-        // 更新日统计数据 ( 指定日期后的数据都会受到影响 )
+        noteService.save(note);
+        dayStatisticsService.saveAll(dayStatisticsList);
+
+        // 如果是当月记账，更新往后的日统计数据，更新账本余额和动态日预算(以上)即可
+        // 如果不是当月记账，需处理月统计数据，且根据月统计是否转结决定是否处理后面的数据
+        Date nowMonthFirst = DateUtils.monthFirstDay(new Date());
+        Date recordMonthFirst = DateUtils.monthFirstDay(dt);
+        while (recordMonthFirst.getTime() < nowMonthFirst.getTime()) {
+
+            MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), recordMonthFirst);
+            monthStatistics.setBalance(monthStatistics.getBalance().subtract(moneySign));
+            monthStatistics.setMonthSpending(monthStatistics.getMonthSpending().add(moneySign));
+
+            int monthDaysReal = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(
+                    note.getNoteId(), monthStatistics.getDt(), DateUtils.monthLastDay(monthStatistics.getDt())).size();
+
+            monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(
+                    BigDecimal.valueOf(monthDaysReal), 2, BigDecimal.ROUND_HALF_UP));
+            monthStatisticsService.save(monthStatistics);
+
+            if(monthStatistics.getIsClear() == 1) {
+                break;
+            } else {
+                // 更新下个月中“结算”记录金额
+                List<Record> list = recordDao.findByNoteIdAnaTypeIdAndDt(note.getNoteId(), RecordsTypeEnum.SETTLE.getId(), DateUtils.addMonth(recordMonthFirst, 1));
+                Record record = JsonUtils.getIndexZero(list);
+                record.setMoney(record.getMoney().subtract(moneySign));
+                recordDao.save(record);
+            }
+
+            recordMonthFirst = DateUtils.addMonth(recordMonthFirst, 1);
+        }
+    }
+
+    /**
+     * 当记账或删除记账时，重新计算记账日期后面的日统计数据
+     * @param dt
+     * @param moneySign
+     * @param dayStatisticsList
+     * @param noteId
+     * @return 返回最后一次的日动态预算，一般是账本当前动态预算
+     */
+    private BigDecimal CalculateDayStatistics(Date dt, BigDecimal moneySign, List<DayStatistics> dayStatisticsList, String noteId) {
+
         BigDecimal nextDynamicDayBudget = null;
-        List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
-        for(int i = 0; i < dayStatisticsList.size() ; i++){
+        for (int i = 0; i < dayStatisticsList.size(); i++) {
             DayStatistics dayStatistics = dayStatisticsList.get(i);
-            if(dayStatistics.getDt().getTime() == dt.getTime()){
+
+            // 如果是新的一个月进行判断是否继续遍历
+            if (DateUtils.getDayOfMonth(dayStatistics.getDt()) == 1 && dayStatistics.getDt().getTime() != dt.getTime()) {
+                MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(noteId,
+                        DateUtils.addMonth(dayStatistics.getDt(), -1));
+                if(monthStatistics.getIsClear() == 1){
+                    return null;
+                }
+            }
+            if (dayStatistics.getDt().getTime() == dt.getTime()) {
                 dayStatistics.setDaySpending(dayStatistics.getDaySpending().add(moneySign));
             }
             dayStatistics.setBalance(dayStatistics.getBalance().subtract(moneySign));
-            if(i > 0){
+            if(i > 0) {
                 dayStatistics.setDynamicDayBudget(nextDynamicDayBudget);
             }
             nextDynamicDayBudget = getDynamicDayBudget(dayStatistics.getDt(), dayStatistics.getBalance());
         }
-
-        // 计算账本余额数据
-        note.setBalance(note.getBalance().subtract(moneySign));
-        note.setDynamicDayBudget(nextDynamicDayBudget);
-
-        noteService.save(note);
-        dayStatisticsService.saveAll(dayStatisticsList);
+        return nextDynamicDayBudget;
     }
 
     private Record packageRecord(String recordTypeId, BigDecimal money, String description, Date dt, RecordsType type, Note note) {
