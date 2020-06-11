@@ -57,7 +57,7 @@ public class DateUtils {
     public static int getDayOfMonth(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
-        return c.get(Calendar.DAY_OF_MONTH) + 1;
+        return c.get(Calendar.DAY_OF_MONTH);
     }
 
     public static String toCategories(Date date) {
@@ -83,32 +83,23 @@ public class DateUtils {
 
     public static Date monthFirstDay(Date date) {
         Calendar c = Calendar.getInstance();
-        c.setTime(date);
+        c.setTime(toDaySdf(date));
         c.set(Calendar.DAY_OF_MONTH, 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
         return c.getTime();
     }
 
     public static Date lastMonthFirstDay() {
         Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
+        c.setTime(toDaySdf(new Date()));
         c.add(Calendar.MONTH, -1);
         c.set(Calendar.DAY_OF_MONTH, 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
         return c.getTime();
     }
 
     public static Date currMonthFirstDay() {
         Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
+        c.setTime(toDaySdf(new Date()));
         c.set(Calendar.DAY_OF_MONTH, 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
         return c.getTime();
     }
 
@@ -133,7 +124,7 @@ public class DateUtils {
 
     public static Date monthLastDay(Date dt) {
         Calendar c = Calendar.getInstance();
-        c.setTime(dt);
+        c.setTime(toDaySdf(dt));
         c.set(Calendar.DAY_OF_MONTH, monthDays(dt));
         return c.getTime();
     }

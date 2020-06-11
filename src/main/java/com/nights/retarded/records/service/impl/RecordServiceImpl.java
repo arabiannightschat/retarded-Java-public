@@ -69,7 +69,10 @@ public class RecordServiceImpl implements RecordService{
             return null;
         }
         Date now = DateUtils.toDaySdf(new Date());
-        Date endTime = DateUtils.addDay(now, (recordsLoadingCount * (-1) * recentDays) - 1);
+        // if 6/11 count = 1, endTime = 5/31, startTime = 5/21
+        // if 6/11 count = 2, endTime = 5/21, startTime = 5/11
+        // so endTime should add - recordsLoadingCount
+        Date endTime = DateUtils.addDay(now, (recordsLoadingCount * (-1) * recentDays) - recordsLoadingCount);
         Date startTime = DateUtils.addDay(endTime, (-1) * recentDays);
         List<RecentRecords> list = getRecentRecords(currNoteId, startTime, endTime);
         if(list.size() == 0) {
@@ -216,7 +219,7 @@ public class RecordServiceImpl implements RecordService{
                 break;
             } else {
                 // 更新下个月中“结算”记录金额
-                List<Record> list = recordDao.findByNoteIdAnaTypeIdAndDt(note.getNoteId(), RecordsTypeEnum.SETTLE.getId(), DateUtils.addMonth(recordMonthFirst, 1));
+                List<Record> list = recordDao.findByNoteIdAndTypeIdAndDt(note.getNoteId(), RecordsTypeEnum.SETTLE.getId(), DateUtils.addMonth(recordMonthFirst, 1));
                 Record record = JsonUtils.getIndexZero(list);
                 record.setMoney(record.getMoney().subtract(moneySign));
                 recordDao.save(record);

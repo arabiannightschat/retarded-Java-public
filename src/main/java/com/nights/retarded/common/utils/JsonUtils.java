@@ -52,20 +52,7 @@ public class JsonUtils {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static Map<String,String> jsonToStringMap(String string){
-		
-		Map<String,String> map = null;
-		try {
-			map = json.readValue(string, HashMap.class);	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return map;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static ArrayList<Object> jsonToList(String string){
+	private static ArrayList<Object> jsonToList(String string){
 		
 		ArrayList<Object> list = null;
 		json.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
@@ -76,6 +63,16 @@ public class JsonUtils {
 		}
 		return list;
 	}
+
+    public static <T> ArrayList<T>jsonToList(String string, Class<T> classs){
+        List<Object> list = jsonToList(string);
+        ArrayList<T> result = new ArrayList<>();
+        for (Object object: list){
+            T t = objectToClass(object, classs);
+            result.add(t);
+        }
+        return result;
+    }
 	
 	public static ObjectMapper getJson() {
 		return json;
