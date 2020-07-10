@@ -92,8 +92,16 @@ public class ScheduledTasks {
             int dayToNextMonth = DateUtils.dayToNextMonth(DateUtils.currMonthFirstDay());
             note.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(dayToNextMonth)));
             note.setBalance(note.getMonthBudget());
-            note.setDynamicDayBudget(null);
+            note.setDynamicDayBudget(note.getDayBudget());
             noteService.save(note);
+
+            DayStatistics dayStatistics = dayStatisticsService.findByNoteIdAndDt(note.getNoteId(), DateUtils.toDaySdf(new Date()));
+            if(dayStatistics != null) {
+                dayStatistics.setBalance(note.getBalance());
+                dayStatistics.setDynamicDayBudget(note.getDynamicDayBudget());
+                dayStatisticsService.save(dayStatistics);
+            }
+
         }
 
     }

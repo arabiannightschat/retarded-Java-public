@@ -16,4 +16,5 @@ public interface RecordDao extends JpaRepository<Record, String>{
     int countByNoteIdAndDtLessThanEqual(String currNoteId, Date startTime);
 
     List<Record> findByNoteIdAndTypeIdAndDt(String noteId, String id, Date recordMonthFirst);
+
 }

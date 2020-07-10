@@ -104,7 +104,13 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
         result.put("categories", categories);
         result.put("daySpending", daySpending);
         result.put("dayBudget", dayBudget);
+
+        // 获取记账类型分布饼图
+        List<Map<String,Object>> ringChartsData = monthStatisticsDao.statSumByType(currNoteId, monthFirstDay, monthLastDay);
+        result.put("ringChartsData", ringChartsData);
+
         return result;
     }
+
 
 }
