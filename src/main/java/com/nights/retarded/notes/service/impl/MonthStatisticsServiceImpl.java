@@ -1,6 +1,7 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.annotation.Resource;
@@ -79,6 +80,7 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
         Date monthFirstDay = DateUtils.monthFirstDay(monthDate);
         Date monthLastDay = DateUtils.monthLastDay(monthDate);
         Map<String, Object> result = new HashMap<>();
+        Note note = noteService.findById(currNoteId);
 
         // 获取月份统计数据
         MonthStatistics monthStatistics = monthStatisticsDao.findByNoteIdAndDt(currNoteId, monthFirstDay);
@@ -108,6 +110,10 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
         // 获取记账类型分布饼图
         List<Map<String,Object>> ringChartsData = monthStatisticsDao.statSumByType(currNoteId, monthFirstDay, monthLastDay);
         result.put("ringChartsData", ringChartsData);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月");
+        result.put("currMonth", sdf.format(new Date()));
+        result.put("startMonth", note.getCreateDt());
 
         return result;
     }

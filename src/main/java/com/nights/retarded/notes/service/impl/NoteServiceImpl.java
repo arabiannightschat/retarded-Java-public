@@ -153,7 +153,11 @@ public class NoteServiceImpl implements NoteService{
                 findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthFirst, monthLast);
         int monthDaysReal = monthDaysRealList.size();
         // 当月预算 = 记账天数 * 日预算
-        monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(monthDaysReal)));
+        if(monthFirst.getTime() == DateUtils.currMonthFirstDay().getTime()){
+            monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(DateUtils.monthDays(new Date()))));
+        } else {
+            monthStatistics.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(monthDaysReal)));
+        }
         // 当月花费 = 当月预算 - 账本余额
         monthStatistics.setMonthSpending(monthStatistics.getMonthBudget().subtract(note.getBalance()));
         // 当月余额 = 当月预算 - 当月花费
