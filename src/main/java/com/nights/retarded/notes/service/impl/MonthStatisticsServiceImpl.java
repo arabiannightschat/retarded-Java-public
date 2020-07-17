@@ -111,8 +111,6 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
         List<Map<String,Object>> ringChartsData = monthStatisticsDao.statSumByType(currNoteId, monthFirstDay, monthLastDay);
         result.put("ringChartsData", ringChartsData);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月");
-        result.put("currMonth", sdf.format(new Date()));
         result.put("startMonth", note.getCreateDt());
 
         return result;
