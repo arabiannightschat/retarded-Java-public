@@ -64,7 +64,4 @@ public class BaseController {
         }
     }
 
-    public String objectToJson(Object obj){
-        return JsonUtils.objectToJson(obj);
-    }
 }
