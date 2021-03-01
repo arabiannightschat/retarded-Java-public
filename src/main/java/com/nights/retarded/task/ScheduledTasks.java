@@ -1,9 +1,9 @@
 package com.nights.retarded.task;
 
 import com.nights.retarded.common.utils.DateUtils;
-import com.nights.retarded.notes.model.DayStatistics;
-import com.nights.retarded.notes.model.MonthStatistics;
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.DayStatistics;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
+import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.MonthStatisticsService;
 import com.nights.retarded.notes.service.NoteService;

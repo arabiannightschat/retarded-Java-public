@@ -7,8 +7,6 @@ import com.nights.retarded.common.utils.RedisUtils;
 import com.nights.retarded.sys.model.enums.WxUrl;
 import com.nights.retarded.sys.service.LoginRecordService;
 import com.nights.retarded.sys.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +19,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/sys/login")
-@Api(value="登录")
 public class LoginController extends BaseController {
 	
 	@Autowired
@@ -32,9 +29,7 @@ public class LoginController extends BaseController {
 
 	/*
 	 * wxOpenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openid":"opxLy5I39n4oZyPg_CUysPgemVec"}
-	 *
 	 */
-	@ApiOperation(value="微信小程序登录")
 	@RequestMapping(value = "wxLogin", method = RequestMethod.GET)
 	public Map wxLogin(String code, String oldSessionId) {
 

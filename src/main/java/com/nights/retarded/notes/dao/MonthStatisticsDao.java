@@ -2,7 +2,7 @@ package com.nights.retarded.notes.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.nights.retarded.notes.model.MonthStatistics;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

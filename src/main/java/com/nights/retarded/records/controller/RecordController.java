@@ -1,17 +1,11 @@
 package com.nights.retarded.records.controller;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import com.nights.retarded.base.BaseController;
-import com.nights.retarded.notes.service.NoteService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import com.nights.retarded.common.utils.JsonUtils;
 import com.nights.retarded.records.service.RecordService;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.annotations.ApiOperation;
-
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
@@ -23,7 +17,6 @@ public class RecordController extends BaseController {
 	@Resource(name="recordService")
 	private RecordService recordService;
 
-	@ApiOperation(value="查询所有")
 	@RequestMapping(value = "getAll", method = RequestMethod.GET)
 	public String getAll() {
 		return JsonUtils.objectToJson(recordService.getAll());

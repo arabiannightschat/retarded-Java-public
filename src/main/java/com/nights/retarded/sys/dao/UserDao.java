@@ -7,6 +7,6 @@ import com.nights.retarded.sys.model.User;
 //如果不需要写实现类，直接继承 JpaRepository<User,String>
 public interface UserDao extends JpaRepository<User,String>{
 
-	public User findByOpenId(String openId);
+	User findByOpenId(String openId);
 	
 }

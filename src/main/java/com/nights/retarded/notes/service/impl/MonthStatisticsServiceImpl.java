@@ -1,22 +1,22 @@
 package com.nights.retarded.notes.service.impl;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.notes.model.DayStatistics;
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.DayStatistics;
+import com.nights.retarded.notes.model.entity.Note;
+import com.nights.retarded.notes.model.vo.StatisticsLineChart;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
 import com.nights.retarded.records.model.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.nights.retarded.notes.model.MonthStatistics;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
 import com.nights.retarded.notes.dao.MonthStatisticsDao;
 import com.nights.retarded.notes.service.MonthStatisticsService;
 
@@ -84,28 +84,22 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
 
         // 获取月份统计数据
         MonthStatistics monthStatistics = monthStatisticsDao.findByNoteIdAndDt(currNoteId, monthFirstDay);
-
         if(monthStatistics == null) {
             monthStatistics = noteService.statMonthStatistics(noteService.findById(currNoteId), monthFirstDay, monthLastDay);
         }
         result.put("monthStatistics", monthStatistics);
 
-        // 获取日统计数据列表
+        // 获取日统计数据折线图
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(
                 currNoteId, monthFirstDay, monthLastDay);
-        // 获取图表信息
-        List<String> categories = new ArrayList<>();
-        List<BigDecimal> daySpending = new ArrayList<>();
-        List<BigDecimal> dayBudget = new ArrayList<>();
+        StatisticsLineChart statisticsLineChart = new StatisticsLineChart();
         for(DayStatistics dayStatistics : dayStatisticsList) {
             String date = DateUtils.toCategoriesDay(dayStatistics.getDt());
-            categories.add(date);
-            daySpending.add(dayStatistics.getDaySpending());
-            dayBudget.add(dayStatistics.getDayBudget());
+            statisticsLineChart.getCategories().add(date);
+            statisticsLineChart.getDaySpending().add(dayStatistics.getDaySpending());
+            statisticsLineChart.getDayBudget().add(dayStatistics.getDayBudget());
         }
-        result.put("categories", categories);
-        result.put("daySpending", daySpending);
-        result.put("dayBudget", dayBudget);
+        result.put("lineChartData", statisticsLineChart);
 
         // 获取记账类型分布饼图
         List<Map<String,Object>> ringChartsData = monthStatisticsDao.statSumByType(currNoteId, monthFirstDay, monthLastDay);

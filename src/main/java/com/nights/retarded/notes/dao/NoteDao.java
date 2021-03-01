@@ -2,7 +2,7 @@ package com.nights.retarded.notes.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.Note;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.nights.retarded.base;
 
 import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 

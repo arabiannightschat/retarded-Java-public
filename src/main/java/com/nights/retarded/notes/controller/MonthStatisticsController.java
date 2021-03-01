@@ -1,19 +1,14 @@
 package com.nights.retarded.notes.controller;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import com.nights.retarded.base.BaseController;
 import com.nights.retarded.common.utils.DateUtils;
-import com.nights.retarded.notes.model.MonthStatistics;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
+import com.nights.retarded.notes.service.MonthStatisticsService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.notes.service.MonthStatisticsService;
-
-import io.swagger.annotations.ApiOperation;
-
+import javax.annotation.Resource;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +22,6 @@ public class MonthStatisticsController extends BaseController {
 	@Resource(name="monthStatisticsService")
 	private MonthStatisticsService monthStatisticsService;
 
-	@ApiOperation(value="查询所有")
 	@RequestMapping(value = "getAll", method = RequestMethod.GET)
 	public Map getAll() {
 		return Success(monthStatisticsService.getAll());

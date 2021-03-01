@@ -7,12 +7,12 @@ import javax.annotation.Resource;
 
 import com.nights.retarded.common.utils.DateUtils;
 import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.service.NoteService;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.nights.retarded.notes.model.DayStatistics;
+import com.nights.retarded.notes.model.entity.DayStatistics;
 import com.nights.retarded.notes.dao.DayStatisticsDao;
 import com.nights.retarded.notes.service.DayStatisticsService;
 

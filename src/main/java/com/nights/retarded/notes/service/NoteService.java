@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.nights.retarded.notes.model.MonthStatistics;
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
+import com.nights.retarded.notes.model.entity.Note;
 
 public interface NoteService {
 

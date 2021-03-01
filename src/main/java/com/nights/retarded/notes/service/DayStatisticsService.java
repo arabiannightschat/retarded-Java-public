@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.nights.retarded.notes.model.DayStatistics;
-import com.nights.retarded.notes.model.Note;
+import com.nights.retarded.notes.model.entity.DayStatistics;
+import com.nights.retarded.notes.model.entity.Note;
 
 public interface DayStatisticsService {
 

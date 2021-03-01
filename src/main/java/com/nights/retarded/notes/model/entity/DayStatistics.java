@@ -1,4 +1,4 @@
-package com.nights.retarded.notes.model;
+package com.nights.retarded.notes.model.entity;
 
 import java.io.Serializable;
 import java.util.Date;

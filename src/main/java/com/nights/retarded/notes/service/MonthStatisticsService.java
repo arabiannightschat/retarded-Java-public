@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.nights.retarded.notes.model.MonthStatistics;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
 
 public interface MonthStatisticsService {
 
