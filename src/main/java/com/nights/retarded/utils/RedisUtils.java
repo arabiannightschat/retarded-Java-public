@@ -1,8 +1,6 @@
-package com.nights.retarded.common.utils;
+package com.nights.retarded.utils;
 
 import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;

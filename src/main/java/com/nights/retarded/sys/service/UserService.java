@@ -1,6 +1,6 @@
 package com.nights.retarded.sys.service;
 
-import com.nights.retarded.sys.model.User;
+import com.nights.retarded.sys.model.entity.User;
 
 public interface UserService {
 	

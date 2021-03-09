@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.nights.retarded.notes.model.entity.Note;
-import com.nights.retarded.records.model.RecentRecords;
-import com.nights.retarded.records.model.Record;
+import com.nights.retarded.records.model.vo.RecentRecords;
+import com.nights.retarded.records.model.entity.Record;
 
 public interface RecordService {
 

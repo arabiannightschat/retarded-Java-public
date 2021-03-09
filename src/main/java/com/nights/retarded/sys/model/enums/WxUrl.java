@@ -10,7 +10,7 @@ public enum WxUrl {
 		return url;
 	}
 
-	private WxUrl(String url) {
+	WxUrl(String url) {
 		this.url = url;
 	}
 }

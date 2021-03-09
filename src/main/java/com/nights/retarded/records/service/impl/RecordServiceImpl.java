@@ -6,16 +6,20 @@ import java.util.*;
 
 import javax.annotation.Resource;
 
-import com.nights.retarded.common.utils.DateUtils;
-import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.common.utils.StringUtils;
+import com.nights.retarded.records.model.entity.Record;
+import com.nights.retarded.records.model.entity.RecordsType;
+import com.nights.retarded.records.model.enums.RecordsTypeEnum;
+import com.nights.retarded.records.model.vo.RecentRecords;
+import com.nights.retarded.records.model.vo.RecordVO;
+import com.nights.retarded.utils.DateUtils;
+import com.nights.retarded.utils.JsonUtils;
+import com.nights.retarded.utils.StringUtils;
 import com.nights.retarded.notes.model.entity.DayStatistics;
 import com.nights.retarded.notes.model.entity.MonthStatistics;
 import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.MonthStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
-import com.nights.retarded.records.model.*;
 import com.nights.retarded.records.service.RecordsTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,7 +68,7 @@ public class RecordServiceImpl implements RecordService{
         if(recordsLoadingCount > 20){
             result.put("tooLong", true);
         }
-        if(StringUtils.isBlank(currNoteId)){
+        if(StringUtils.isEmpty(currNoteId)){
             return null;
         }
         Date now = DateUtils.toDaySdf(new Date());
@@ -133,7 +137,7 @@ public class RecordServiceImpl implements RecordService{
             recordsType = recordsTypeService.findById(record.getTypeId());
             typesMap.put("record.getTypeId()",recordsType);
         }
-        if(StringUtils.isNotBlank(record.getDescription())){
+        if(StringUtils.isNotEmpty(record.getDescription())){
             recordVO.setDescription(record.getDescription());
         } else {
             recordVO.setDescription(recordsType.getName());
@@ -172,7 +176,7 @@ public class RecordServiceImpl implements RecordService{
         // 如果结算记录被删掉，上月月统计修改为已清零
         if(RecordsTypeEnum.SETTLE.getId().equals(record.getTypeId())) {
             MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(),
-                    DateUtils.monthFirstDay(DateUtils.addMonth(record.getDt(),-1)));
+                    DateUtils.monthBegin(DateUtils.addMonth(record.getDt(),-1)));
             monthStatistics.setIsClear(1);
             monthStatisticsService.save(monthStatistics);
         }
@@ -199,8 +203,8 @@ public class RecordServiceImpl implements RecordService{
 
         // 如果是当月记账，更新往后的日统计数据，更新账本余额和动态日预算(以上)即可
         // 如果不是当月记账，需处理月统计数据，且根据月统计是否转结决定是否处理后面的数据
-        Date nowMonthFirst = DateUtils.monthFirstDay(new Date());
-        Date recordMonthFirst = DateUtils.monthFirstDay(dt);
+        Date nowMonthFirst = DateUtils.monthBegin(new Date());
+        Date recordMonthFirst = DateUtils.monthEnd(dt);
         while (recordMonthFirst.getTime() < nowMonthFirst.getTime()) {
 
             MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), recordMonthFirst);
@@ -208,7 +212,7 @@ public class RecordServiceImpl implements RecordService{
             monthStatistics.setMonthSpending(monthStatistics.getMonthSpending().add(moneySign));
 
             int monthDaysReal = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(
-                    note.getNoteId(), monthStatistics.getDt(), DateUtils.monthLastDay(monthStatistics.getDt())).size();
+                    note.getNoteId(), monthStatistics.getDt(), DateUtils.monthEnd(monthStatistics.getDt())).size();
 
             monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(
                     BigDecimal.valueOf(monthDaysReal), 2, BigDecimal.ROUND_HALF_UP));
@@ -265,7 +269,7 @@ public class RecordServiceImpl implements RecordService{
     private Record packageRecord(String recordTypeId, BigDecimal money, String description, Date dt, RecordsType type, Note note) {
         Record record = new Record();
         record.setCreateDt(new Date());
-        if(StringUtils.isNotBlank(description)){
+        if(StringUtils.isNotEmpty(description)){
             record.setDescription(description);
         } else {
             record.setDescription(type.getName());

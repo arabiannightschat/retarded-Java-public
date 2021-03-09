@@ -1,7 +1,8 @@
 package com.nights.retarded.notes.controller;
 
-import com.nights.retarded.base.BaseController;
-import com.nights.retarded.common.utils.DateUtils;
+import com.nights.retarded.base.baseController.BaseController;
+import com.nights.retarded.base.baseController.Result;
+import com.nights.retarded.utils.DateUtils;
 import com.nights.retarded.notes.model.entity.MonthStatistics;
 import com.nights.retarded.notes.service.MonthStatisticsService;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -23,7 +24,7 @@ public class MonthStatisticsController extends BaseController {
 	private MonthStatisticsService monthStatisticsService;
 
 	@RequestMapping(value = "getAll", method = RequestMethod.GET)
-	public Map getAll() {
+	public Result getAll() {
 		return Success(monthStatisticsService.getAll());
 	}
 
@@ -32,11 +33,11 @@ public class MonthStatisticsController extends BaseController {
      * @return
      */
 	@GetMapping("getLastMonthStatistics")
-    public Map getLastMonthStatistics(){
+    public Result getLastMonthStatistics(){
 	    Map<String, Object> map = new HashMap<>();
         MonthStatistics monthStatistics = monthStatisticsService.getLastMonthStatistics(getCurrNoteId());
 	    map.put("lastMonthStatistics", monthStatistics);
-        Date lastDateOfLastMonth = DateUtils.monthLastDay(monthStatistics.getDt());
+        Date lastDateOfLastMonth = DateUtils.monthEnd(monthStatistics.getDt());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy 年 MM 月 dd 日");
 	    map.put("lastDateOfLastMonth", sdf.format(lastDateOfLastMonth));
         return Success(map);
@@ -44,7 +45,7 @@ public class MonthStatisticsController extends BaseController {
 
     // 将上月超支/省下的xx元在本月预算中扣除/添加到本月预算中
     @PostMapping("importLastMonthBalance")
-    public Map importLastMonthBalance(Integer isImport){
+    public Result importLastMonthBalance(Integer isImport){
 	    monthStatisticsService.importLastMonthBalance(getCurrNoteId(), isImport);
 	    return Success();
     }
@@ -53,7 +54,7 @@ public class MonthStatisticsController extends BaseController {
      * 用于统计页
      */
     @GetMapping("getMonthStatistics")
-    public Map getMonthStatistics(Date monthDate){
+    public Result getMonthStatistics(Date monthDate){
         return Success(monthStatisticsService.getMonthStatistics(monthDate, getCurrNoteId()));
     }
 

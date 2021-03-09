@@ -2,7 +2,7 @@ package com.nights.retarded.records.service;
 
 import java.util.List;
 
-import com.nights.retarded.records.model.RecordsUserType;
+import com.nights.retarded.records.model.entity.RecordsUserType;
 
 public interface RecordsUserTypeService {
 

@@ -6,13 +6,13 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.nights.retarded.common.utils.DateUtils;
-import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.utils.DateUtils;
+import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.notes.model.entity.DayStatistics;
 import com.nights.retarded.notes.model.entity.MonthStatistics;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.MonthStatisticsService;
-import com.nights.retarded.records.model.RecordsTypeEnum;
+import com.nights.retarded.records.model.enums.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class NoteServiceImpl implements NoteService{
         note.setCreateDt(new Date());
         note.setStatus(1);
         note.setOpenId(openId);
-        note.setName("默认账本 " + DateUtils.daySdf2.format(new Date()));
+        note.setName("默认账本 " + DateUtils.daySdf.format(new Date()));
         note.setMonthStatisticsState(1);
         note.setDaysWithoutOperation(0);
         noteDao.save(note);
@@ -102,13 +102,13 @@ public class NoteServiceImpl implements NoteService{
         }
 
         // 如果不是同一个月 1. 生成冻结当月的月统计数据（如果没有的话）2. 重置并解冻账本，置月结处理为未处理
-        Date monthFirst = DateUtils.monthFirstDay(lastDate);
-        Date monthLast = DateUtils.monthLastDay(lastDate);
+        Date monthBegin = DateUtils.monthBegin(lastDate);
+        Date monthEnd = DateUtils.monthEnd(lastDate);
 
         // 生成冻结当月的月份统计数据
-        MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), monthFirst);
+        MonthStatistics monthStatistics = monthStatisticsService.findByNoteIdAndDt(note.getNoteId(), monthBegin);
         if(monthStatistics == null) {
-            createLastMonthStatistics(note, lastDate, monthFirst, monthLast);
+            createLastMonthStatistics(note, monthBegin, monthEnd);
         }
 
         // 更新账本信息
@@ -133,11 +133,10 @@ public class NoteServiceImpl implements NoteService{
     /**
      * 创建冻结时的月份数据统计
      * @param note
-     * @param lastDate
      * @param monthFirst
      * @param monthLast
      */
-    private void createLastMonthStatistics(Note note, Date lastDate, Date monthFirst, Date monthLast) {
+    private void createLastMonthStatistics(Note note, Date monthFirst, Date monthLast) {
         MonthStatistics monthStatistics = statMonthStatistics(note, monthFirst, monthLast);
         monthStatisticsService.save(monthStatistics);
         note.setMonthStatisticsState(0);

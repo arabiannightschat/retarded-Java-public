@@ -5,12 +5,10 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.nights.retarded.sys.model.User;
 import org.springframework.stereotype.Service;
 
 import com.nights.retarded.sys.dao.LoginRecordDao;
-import com.nights.retarded.sys.dao.UserDao;
-import com.nights.retarded.sys.model.LoginRecord;
+import com.nights.retarded.sys.model.entity.LoginRecord;
 import com.nights.retarded.sys.service.LoginRecordService;
 
 @Service("loginRecordService")

@@ -1,9 +1,10 @@
 package com.nights.retarded.sys.controller;
 
-import com.nights.retarded.base.BaseController;
-import com.nights.retarded.common.utils.HttpUtil;
-import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.common.utils.RedisUtils;
+import com.nights.retarded.base.baseController.BaseController;
+import com.nights.retarded.base.baseController.Result;
+import com.nights.retarded.utils.HttpUtil;
+import com.nights.retarded.utils.JsonUtils;
+import com.nights.retarded.utils.RedisUtils;
 import com.nights.retarded.sys.model.enums.WxUrl;
 import com.nights.retarded.sys.service.LoginRecordService;
 import com.nights.retarded.sys.service.UserService;
@@ -27,11 +28,12 @@ public class LoginController extends BaseController {
 	@Autowired
     private UserService userService;
 
-	/*
+	/**
+     * 微信小程序登录接口
 	 * wxOpenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openid":"opxLy5I39n4oZyPg_CUysPgemVec"}
 	 */
 	@RequestMapping(value = "wxLogin", method = RequestMethod.GET)
-	public Map wxLogin(String code, String oldSessionId) {
+	public Result wxLogin(String code, String oldSessionId) {
 
 	    String openId;
 	    String sessionId;
@@ -44,7 +46,7 @@ public class LoginController extends BaseController {
             params.put("grant_type", "authorization_code");
             String wxOpenId = HttpUtil.get(WxUrl.codeToOpenId.getUrl(), params);
 
-            sessionId = "AZ" + UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
+            sessionId = "AZ:" + UUID.randomUUID().toString().toUpperCase().replaceAll("-", "");
             RedisUtils.set30Days(sessionId, wxOpenId);
             RedisUtils.del(oldSessionId);
             openId = JsonUtils.toOpenId(wxOpenId);

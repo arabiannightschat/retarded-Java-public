@@ -1,6 +1,7 @@
 package com.nights.retarded.notes.controller;
 
-import com.nights.retarded.base.BaseController;
+import com.nights.retarded.base.baseController.BaseController;
+import com.nights.retarded.base.baseController.Result;
 import com.nights.retarded.notes.service.NoteService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,17 +17,17 @@ public class NoteController extends BaseController {
 	private NoteService noteService;
 
 	@RequestMapping(value = "getAll", method = RequestMethod.GET)
-	public Map getAll() {
+	public Result getAll() {
 		return Success(noteService.getAll());
 	}
 
 	@PostMapping("createNote")
-    public Map createNote(BigDecimal monthBudget){
+    public Result createNote(BigDecimal monthBudget){
         return Success(noteService.createNote(getOpenId(), monthBudget));
     }
 
     @GetMapping("getCurrNote")
-    public Map getCurrNote(){
+    public Result getCurrNote(){
 	    return Success(noteService.getCurrNote(getOpenId()));
     }
 
@@ -35,7 +36,7 @@ public class NoteController extends BaseController {
      * @return
      */
     @PostMapping("unfreeze")
-    public Map unfreeze(){
+    public Result unfreeze(){
 	    noteService.unfreeze(noteService.getCurrNoteContainFreeze(getOpenId()));
 	    return Success();
     }

@@ -1,4 +1,4 @@
-package com.nights.retarded.records.model;
+package com.nights.retarded.records.model.enums;
 
 public enum RecordsTypeEnum {
 

@@ -1,6 +1,6 @@
 package com.nights.retarded;
 
-import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.service.NoteService;
 import org.junit.Test;

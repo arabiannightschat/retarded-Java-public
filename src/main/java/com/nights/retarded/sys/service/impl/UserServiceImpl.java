@@ -1,10 +1,10 @@
 package com.nights.retarded.sys.service.impl;
 
-import com.nights.retarded.common.utils.DateUtils;
-import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.utils.DateUtils;
+import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.sys.dao.UserDao;
-import com.nights.retarded.sys.model.LoginRecord;
-import com.nights.retarded.sys.model.User;
+import com.nights.retarded.sys.model.entity.LoginRecord;
+import com.nights.retarded.sys.model.entity.User;
 import com.nights.retarded.sys.service.LoginRecordService;
 import com.nights.retarded.sys.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

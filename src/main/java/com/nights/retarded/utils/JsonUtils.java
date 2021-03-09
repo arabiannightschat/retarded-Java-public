@@ -1,4 +1,4 @@
-package com.nights.retarded.common.utils;
+package com.nights.retarded.utils;
 
 import java.util.*;
 

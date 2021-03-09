@@ -1,6 +1,6 @@
 package com.nights.retarded.sys.controller;
 
-import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.sys.service.FeedbackService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

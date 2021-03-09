@@ -1,6 +1,6 @@
 package com.nights.retarded.task;
 
-import com.nights.retarded.common.utils.DateUtils;
+import com.nights.retarded.utils.DateUtils;
 import com.nights.retarded.notes.model.entity.DayStatistics;
 import com.nights.retarded.notes.model.entity.MonthStatistics;
 import com.nights.retarded.notes.model.entity.Note;
@@ -76,7 +76,7 @@ public class ScheduledTasks {
 
             // 获取平均日花销
             List<DayStatistics> monthDaysRealList = dayStatisticsService.
-                    findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthStatistics.getDt(), DateUtils.monthLastDay(monthStatistics.getDt()));
+                    findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthStatistics.getDt(), DateUtils.monthEnd(monthStatistics.getDt()));
             int monthDaysReal = monthDaysRealList.size();
             monthStatistics.setAvgDaySpending(note.getBalance().divide(BigDecimal.valueOf(monthDaysReal),2, BigDecimal.ROUND_HALF_UP));
             monthStatistics.setMonthBudget(note.getMonthBudget());

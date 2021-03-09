@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
-import com.nights.retarded.records.model.RecordsType;
+import com.nights.retarded.records.model.entity.RecordsType;
 import com.nights.retarded.records.dao.RecordsTypeDao;
 import com.nights.retarded.records.service.RecordsTypeService;
 

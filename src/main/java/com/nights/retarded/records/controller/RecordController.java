@@ -1,7 +1,8 @@
 package com.nights.retarded.records.controller;
 
-import com.nights.retarded.base.BaseController;
-import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.base.baseController.BaseController;
+import com.nights.retarded.base.baseController.Result;
+import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +18,13 @@ public class RecordController extends BaseController {
 	@Resource(name="recordService")
 	private RecordService recordService;
 
-	@RequestMapping(value = "getAll", method = RequestMethod.GET)
-	public String getAll() {
-		return JsonUtils.objectToJson(recordService.getAll());
+	@GetMapping(value = "getAll")
+	public Result getAll() {
+		return Success(recordService.getAll());
 	}
 
     @PostMapping("addRecord")
-    public Map addRecord(String recordTypeId, BigDecimal money, String description, @RequestParam(required = false) Date dt){
+    public Result addRecord(String recordTypeId, BigDecimal money, String description, @RequestParam(required = false) Date dt){
 	    if(dt == null) {
 	        dt = new Date();
         }
@@ -32,13 +33,13 @@ public class RecordController extends BaseController {
     }
 
     @PostMapping("delRecord")
-    public Map delRecord(String recordId) {
+    public Result delRecord(String recordId) {
 	    recordService.delRecord(recordId);
 	    return Success();
     }
 
     @GetMapping("recordsLoading")
-    public Map recordsLoading(int recordsLoadingCount) {
+    public Result recordsLoading(int recordsLoadingCount) {
 	    return Success(recordService.recordsLoading(recordsLoadingCount, getCurrNoteId()));
     }
 }

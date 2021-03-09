@@ -1,6 +1,6 @@
 package com.nights.retarded.sys.service;
 
-import com.nights.retarded.sys.model.LoginRecord;
+import com.nights.retarded.sys.model.entity.LoginRecord;
 
 import java.util.Date;
 import java.util.List;

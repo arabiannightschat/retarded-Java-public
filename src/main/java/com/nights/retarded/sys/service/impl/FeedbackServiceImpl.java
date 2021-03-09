@@ -4,10 +4,10 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.nights.retarded.common.utils.MailUtil;
+import com.nights.retarded.utils.MailUtil;
 import com.nights.retarded.sys.dao.FeedbackDao;
-import com.nights.retarded.sys.model.Feedback;
-import com.nights.retarded.sys.model.User;
+import com.nights.retarded.sys.model.entity.Feedback;
+import com.nights.retarded.sys.model.entity.User;
 import com.nights.retarded.sys.service.FeedbackService;
 import com.nights.retarded.sys.service.UserService;
 

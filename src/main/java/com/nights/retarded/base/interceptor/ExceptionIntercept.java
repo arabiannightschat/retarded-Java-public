@@ -1,6 +1,7 @@
 package com.nights.retarded.base.interceptor;
 
-import com.nights.retarded.base.BaseController;
+import com.nights.retarded.base.baseController.BaseController;
+import com.nights.retarded.base.baseController.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,7 +25,7 @@ public class ExceptionIntercept {
      */
     @ResponseBody
     @ExceptionHandler(value = KnownException.class)
-    public Map knownErrorHandler(KnownException ex) {
+    public Result knownErrorHandler(KnownException ex) {
         String message = ex.getMessage() == null ? ex.getCause().getMessage() : ex.getMessage();
         logger.error("发生已知异常! " + message);
         return BaseController.Error(message);
@@ -35,8 +36,15 @@ public class ExceptionIntercept {
      */
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
-    public Map errorHandler(Exception ex) {
-        String message = ex.getMessage() == null ? ex.getCause().getMessage() : ex.getMessage();
+    public Result errorHandler(Exception ex) {
+        String message;
+        try {
+            message = ex.getMessage() == null ? ex.getCause().getMessage() : ex.getMessage();
+        } catch (Exception e) {
+            ex.printStackTrace();
+            message = "Unknown Info";
+        }
+        ex.printStackTrace();
         logger.error("发生未知异常! " + message);
         return BaseController.UnknownError("发生异常! " + message);
     }

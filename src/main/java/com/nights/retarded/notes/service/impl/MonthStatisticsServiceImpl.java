@@ -1,18 +1,17 @@
 package com.nights.retarded.notes.service.impl;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import javax.annotation.Resource;
 
-import com.nights.retarded.common.utils.DateUtils;
-import com.nights.retarded.common.utils.JsonUtils;
+import com.nights.retarded.utils.DateUtils;
+import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.notes.model.entity.DayStatistics;
 import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.model.vo.StatisticsLineChart;
 import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
-import com.nights.retarded.records.model.RecordsTypeEnum;
+import com.nights.retarded.records.model.enums.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,9 +57,9 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
             MonthStatistics monthStatistics = getLastMonthStatistics(noteId);
             monthStatistics.setIsClear(0);
             monthStatisticsDao.save(monthStatistics);
-            int month = DateUtils.getMonth(DateUtils.monthFirstDay(monthStatistics.getDt()));
+            int month = DateUtils.getMonth(DateUtils.monthBegin(monthStatistics.getDt()));
             recordService.addRecord(RecordsTypeEnum.SETTLE.getId(), monthStatistics.getBalance(),
-                    month + "月余额结转", DateUtils.monthFirstDay(new Date()), noteId);
+                    month + "月余额结转", DateUtils.monthBegin(new Date()), noteId);
 
         }
         // 标记为已处理
@@ -77,8 +76,8 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
     @Override
     public Map<String, Object> getMonthStatistics(Date monthDate, String currNoteId) {
 
-        Date monthFirstDay = DateUtils.monthFirstDay(monthDate);
-        Date monthLastDay = DateUtils.monthLastDay(monthDate);
+        Date monthFirstDay = DateUtils.monthBegin(monthDate);
+        Date monthLastDay = DateUtils.monthEnd(monthDate);
         Map<String, Object> result = new HashMap<>();
         Note note = noteService.findById(currNoteId);
 

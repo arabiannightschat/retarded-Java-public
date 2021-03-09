@@ -1,7 +1,7 @@
 package com.nights.retarded.base.interceptor;
 
-import com.nights.retarded.common.utils.JsonUtils;
-import com.nights.retarded.common.utils.StringUtils;
+import com.nights.retarded.utils.JsonUtils;
+import com.nights.retarded.utils.StringUtils;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -29,7 +29,7 @@ public class TokenInterceptor {
     public void before() throws KnownException {
 
         String openId = JsonUtils.requestToOpenId(request);
-        if(StringUtils.isBlank(openId)){
+        if(StringUtils.isEmpty(openId)){
             throw new KnownException("鉴权失败，请重新登录");
         }
     }
