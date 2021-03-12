@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.nights.retarded.sys.model.entity.User;
+import com.nights.retarded.sys.service.UserService;
 import com.nights.retarded.utils.DateUtils;
 import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.notes.model.entity.DayStatistics;
@@ -14,6 +16,7 @@ import com.nights.retarded.notes.service.DayStatisticsService;
 import com.nights.retarded.notes.service.MonthStatisticsService;
 import com.nights.retarded.records.model.enums.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
+import com.nights.retarded.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.nights.retarded.notes.model.entity.Note;
@@ -23,7 +26,7 @@ import com.nights.retarded.notes.service.NoteService;
 @Service("noteService")
 public class NoteServiceImpl implements NoteService{
 
-	@Resource(name = "noteDao")
+	@Autowired
 	private NoteDao noteDao;
 
 	@Autowired
@@ -35,6 +38,9 @@ public class NoteServiceImpl implements NoteService{
 	@Autowired
     private RecordService recordService;
 
+	@Autowired
+    private UserService userService;
+
 	@Override
 	public List<Note> getAll() {
 		return this.noteDao.findAll();
@@ -42,16 +48,22 @@ public class NoteServiceImpl implements NoteService{
 
     @Override
     public Note createNote(String openId, BigDecimal monthBudget) {
+        Date now = new Date();
         Note note = new Note();
         note.setDayBudget(monthBudget.divide(BigDecimal.valueOf(30), 2, BigDecimal.ROUND_HALF_UP));
-        int days = DateUtils.dayToNextMonth(new Date());
+        int days = DateUtils.dayToNextMonth(now);
         note.setMonthBudget(note.getDayBudget().multiply(BigDecimal.valueOf(days)));
         note.setBalance(note.getMonthBudget());
-        note.setDynamicDayBudget(recordService.getDynamicDayBudget(new Date(), note.getBalance()));
-        note.setCreateDt(new Date());
+        note.setDynamicDayBudget(recordService.getDynamicDayBudget(now, note.getBalance()));
+        note.setCreateDt(now);
         note.setStatus(1);
         note.setOpenId(openId);
-        note.setName("默认账本 " + DateUtils.daySdf.format(new Date()));
+        User user = userService.findByOpenId(openId);
+        if(StringUtils.isEmpty(user.getNickName())){
+            note.setName("默认账本 " + DateUtils.daySdf.format(now));
+        } else {
+            note.setName(user.getNickName() + "的默认账本 " + DateUtils.daySdf.format(now));
+        }
         note.setMonthStatisticsState(1);
         note.setDaysWithoutOperation(0);
         noteDao.save(note);
@@ -94,7 +106,7 @@ public class NoteServiceImpl implements NoteService{
         Date now = DateUtils.toDaySdf(new Date());
 
         // 如果是同一个月，默认没记账的日子里按预算花费
-        if(DateUtils.isSameMonth(new Date(), lastDate)){
+        if(DateUtils.isSameMonth(now, lastDate)){
             spendAccordingToBudget(lastDate, now, note, lastDayStatistics);
             note.setStatus(1);
             noteDao.save(note);
@@ -112,11 +124,11 @@ public class NoteServiceImpl implements NoteService{
         }
 
         // 更新账本信息
-        int days = DateUtils.dayToNextMonth(new Date());
+        int days = DateUtils.dayToNextMonth(now);
         BigDecimal balance = note.getDayBudget().multiply(BigDecimal.valueOf(days));
         note.setBalance(balance);
         // 设定明天的动态日预算 = 当前余额 / 到月底剩余天数（不算今天的）
-        note.setDynamicDayBudget(recordService.getDynamicDayBudget(new Date(), note.getBalance()));
+        note.setDynamicDayBudget(recordService.getDynamicDayBudget(now, note.getBalance()));
         note.setDaysWithoutOperation(0);
         note.setMonthStatisticsState(0);
         note.setStatus(1);
@@ -125,7 +137,7 @@ public class NoteServiceImpl implements NoteService{
         // 创建今日日统计数据
         DayStatistics dayStatistics = dayStatisticsService.initDayStatistics(note);
         // 今日统计数据 -> 动态日预算 = 昨天的余额 / 到月底剩余天数（算今天的）
-        dayStatistics.setDynamicDayBudget(recordService.getDynamicDayBudgetTask(new Date(), note.getBalance()));
+        dayStatistics.setDynamicDayBudget(recordService.getDynamicDayBudgetTask(now, note.getBalance()));
         dayStatisticsService.save(dayStatistics);
 
     }

@@ -56,12 +56,12 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public void countLoginInfo(String openId) {
+		Date now = new Date();
 		User user = userDao.findByOpenId(openId);
 		user.setLoginCount(user.getLoginCount() + 1);
-		user.setLastLoginTime(new Date());
+		user.setLastLoginTime(now);
 		// 如果是今日首次登陆，则记账天数统计 + 1
-		Date dt = DateUtils.toDaySdf(new Date());
-		List<LoginRecord> list = loginRecordService.findByOpenIdAndDtAfter(openId, dt);
+		List<LoginRecord> list = loginRecordService.findByOpenIdAndDtAfter(openId, DateUtils.toDaySdf(now));
 		if(list == null || list.size() == 0) {
 			user.setChargeDayCount(user.getChargeDayCount() + 1);
 		}

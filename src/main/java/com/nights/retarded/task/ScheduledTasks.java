@@ -49,11 +49,11 @@ public class ScheduledTasks {
             } else {
                 note.setDaysWithoutOperation(note.getDaysWithoutOperation() + 1);
             }
-            // 连续不记账7天则冻结账本并删掉这些天的统计数据
+            // 连续不记账5天则冻结账本并删掉这些天的统计数据
             int freezeDaysWithoutOperation = 5;
             if(note.getDaysWithoutOperation() >= freezeDaysWithoutOperation){
                 note.setStatus(0);
-                dayStatisticsService.deleteLastDaysData(note.getNoteId(), freezeDaysWithoutOperation);
+                dayStatisticsService.deleteLastDaysData(note.getNoteId(), freezeDaysWithoutOperation );
             }
             noteService.save(note);
         }

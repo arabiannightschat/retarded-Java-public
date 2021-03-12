@@ -2,16 +2,16 @@ package com.nights.retarded.notes.service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.nights.retarded.notes.model.entity.DayStatistics;
 import com.nights.retarded.notes.model.entity.Note;
+import com.nights.retarded.notes.model.vo.recentData.RecentData;
 
 public interface DayStatisticsService {
 
 	List<DayStatistics> getAll();
 
-    Map getRecentData(String openId);
+    RecentData getRecentData(String openId);
 
     DayStatistics findByNoteIdAndDt(String noteId, Date dt);
 

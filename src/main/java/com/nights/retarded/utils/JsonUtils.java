@@ -19,14 +19,14 @@ public class JsonUtils {
 	/**
 	 * 参数为 String 型的 wxopenId = {"session_key":"oII\/RFa6E\/QMA9ulB2lzAQ==","openId":"opxLy5I39n4oZyPg_CUysPgemVec"}
 	 * @return openId
-	 * @throws Exception 
 	 */
-	@SuppressWarnings("unchecked")
-	public static String toOpenId(String wxopenId) {
-		
+	public static String toOpenId(String wxOpenId) {
+		if(StringUtils.isEmpty(wxOpenId)){
+			return null;
+		}
 		try {
 			Map<String, String> wxopenIdMap;
-			wxopenIdMap = json.readValue(wxopenId, HashMap.class);
+			wxopenIdMap = json.readValue(wxOpenId, HashMap.class);
 			return wxopenIdMap.get("openid");
 		} catch (Exception e) {
 			e.printStackTrace();

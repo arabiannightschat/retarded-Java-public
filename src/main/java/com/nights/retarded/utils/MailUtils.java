@@ -8,13 +8,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MailUtil {
+public class MailUtils {
 	
     private static JavaMailSender javaMailSender;
 	
     @Resource
 	public void setJavaMailSender(JavaMailSender javaMailSender) {
-		MailUtil.javaMailSender = javaMailSender;
+		MailUtils.javaMailSender = javaMailSender;
 	}
 
     public static void sendEmails(String tos, String subject, String content) throws Exception {

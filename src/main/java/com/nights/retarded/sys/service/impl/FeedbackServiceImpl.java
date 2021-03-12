@@ -4,7 +4,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
 
-import com.nights.retarded.utils.MailUtil;
+import com.nights.retarded.utils.MailUtils;
 import com.nights.retarded.sys.dao.FeedbackDao;
 import com.nights.retarded.sys.model.entity.Feedback;
 import com.nights.retarded.sys.model.entity.User;
@@ -42,7 +42,7 @@ public class FeedbackServiceImpl implements FeedbackService{
 		sb.append("		</div>	");
 		sb.append("	</div>	");
 		try {
-			MailUtil.sendEmails("1065531346@qq.com,873226608@qq.com","阿帐-记账帮手开发者：一个新的反馈信息",sb.toString());
+			MailUtils.sendEmails("1065531346@qq.com,873226608@qq.com","阿帐-记账帮手开发者：一个新的反馈信息",sb.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

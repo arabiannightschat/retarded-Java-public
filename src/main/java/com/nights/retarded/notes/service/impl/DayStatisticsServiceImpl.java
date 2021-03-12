@@ -3,8 +3,9 @@ package com.nights.retarded.notes.service.impl;
 import java.math.BigDecimal;
 import java.util.*;
 
-import javax.annotation.Resource;
-
+import com.nights.retarded.notes.model.vo.recentData.ChartsData;
+import com.nights.retarded.notes.model.vo.recentData.RecentData;
+import com.nights.retarded.notes.model.vo.recentData.SimpleData;
 import com.nights.retarded.utils.DateUtils;
 import com.nights.retarded.utils.JsonUtils;
 import com.nights.retarded.notes.model.entity.Note;
@@ -19,7 +20,7 @@ import com.nights.retarded.notes.service.DayStatisticsService;
 @Service("dayStatisticsService")
 public class DayStatisticsServiceImpl implements DayStatisticsService{
 
-	@Resource(name = "dayStatisticsDao")
+	@Autowired
 	private DayStatisticsDao dayStatisticsDao;
 
 	@Autowired
@@ -34,53 +35,46 @@ public class DayStatisticsServiceImpl implements DayStatisticsService{
 	}
 
     @Override
-    public Map getRecentData(String openId) {
-        Map<String, Object> map = new HashMap<>();
+    public RecentData getRecentData(String openId) {
+        RecentData recentData = new RecentData();
 	    // 获取基本信息
         Note note = noteService.getCurrNoteContainFreeze(openId);
         if(note == null) {
             return null;
         }
         if(note.getStatus() == 0) {
-            map.put("note", note);
-            return map;
+            recentData.setNote(note);
+            return recentData;
         }
         Date now = new Date();
         now = DateUtils.toDaySdf(now);
         Date startTime = DateUtils.addDay(now, -5);
         List<DayStatistics> list = dayStatisticsDao.findByNoteIdAndDtBetweenOrderByDtAsc(note.getNoteId(), startTime, now);
-        map.put("balance", note.getBalance());
-        map.put("dayToNextMonth",DateUtils.dayToNextMonth(new Date()));
-        map.put("year", DateUtils.getYear(new Date()));
-        map.put("month", DateUtils.getMonth(new Date()));
+
+        recentData.setSimpleData(new SimpleData(note.getBalance(), DateUtils.dayToNextMonth(now),
+                DateUtils.getYear(now), DateUtils.getMonth(now)));
 
         // 获取图表信息
-        List<String> categories = new ArrayList<>();
-        List<BigDecimal> daySpending = new ArrayList<>();
-        List<BigDecimal> dayBudget = new ArrayList<>();
-        List<BigDecimal> dynamicDayBudget = new ArrayList<>();
+        ChartsData chartsData = new ChartsData();
         for(DayStatistics dayStatistics : list) {
             String date = DateUtils.toCategories(dayStatistics.getDt());
-            categories.add(date);
-            daySpending.add(dayStatistics.getDaySpending());
-            dayBudget.add(dayStatistics.getDayBudget());
-            dynamicDayBudget.add(dayStatistics.getDynamicDayBudget());
+            chartsData.getCategories().add(date);
+            chartsData.getDaySpending().add(dayStatistics.getDaySpending());
+            chartsData.getDayBudget().add(dayStatistics.getDayBudget());
+            chartsData.getDynamicDayBudget().add(dayStatistics.getDynamicDayBudget());
         }
-        if(categories.size() > 0){
+        if(chartsData.getCategories().size() > 0){
             for(int i = 0; i < 2 ; i++){
-                categories.add(DateUtils.toCategories(DateUtils.addDay(now, i+1)));
+                chartsData.getCategories().add(DateUtils.toCategories(DateUtils.addDay(now, i+1)));
             }
-            dayBudget.add(note.getDayBudget());
-            dynamicDayBudget.add(note.getDynamicDayBudget());
+            chartsData.getDayBudget().add(note.getDayBudget());
+            chartsData.getDynamicDayBudget().add(note.getDynamicDayBudget());
         }
-        map.put("categories", categories);
-        map.put("daySpending", daySpending);
-        map.put("dayBudget", dayBudget);
-        map.put("dynamicDayBudget", dynamicDayBudget);
-        map.put("note", note);
-        map.put("recentRecords", recordService.getRecentRecords(note));
+        recentData.setChartsData(chartsData);
+        recentData.setNote(note);
+        recentData.setRecentRecords(recordService.getRecentRecords(note));
 
-        return map;
+        return recentData;
     }
 
     @Override

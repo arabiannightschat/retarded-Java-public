@@ -1,28 +1,30 @@
 package com.nights.retarded.notes.service.impl;
 
-import java.util.*;
-
-import javax.annotation.Resource;
-
-import com.nights.retarded.utils.DateUtils;
-import com.nights.retarded.utils.JsonUtils;
+import com.nights.retarded.notes.dao.MonthStatisticsDao;
 import com.nights.retarded.notes.model.entity.DayStatistics;
+import com.nights.retarded.notes.model.entity.MonthStatistics;
 import com.nights.retarded.notes.model.entity.Note;
 import com.nights.retarded.notes.model.vo.StatisticsLineChart;
 import com.nights.retarded.notes.service.DayStatisticsService;
+import com.nights.retarded.notes.service.MonthStatisticsService;
 import com.nights.retarded.notes.service.NoteService;
 import com.nights.retarded.records.model.enums.RecordsTypeEnum;
 import com.nights.retarded.records.service.RecordService;
+import com.nights.retarded.utils.DateUtils;
+import com.nights.retarded.utils.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.nights.retarded.notes.model.entity.MonthStatistics;
-import com.nights.retarded.notes.dao.MonthStatisticsDao;
-import com.nights.retarded.notes.service.MonthStatisticsService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service("monthStatisticsService")
 public class MonthStatisticsServiceImpl implements MonthStatisticsService{
 
-	@Resource(name = "monthStatisticsDao")
+	@Autowired
 	private MonthStatisticsDao monthStatisticsDao;
 
 	@Autowired
@@ -58,9 +60,8 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
             monthStatistics.setIsClear(0);
             monthStatisticsDao.save(monthStatistics);
             int month = DateUtils.getMonth(DateUtils.monthBegin(monthStatistics.getDt()));
-            recordService.addRecord(RecordsTypeEnum.SETTLE.getId(), monthStatistics.getBalance(),
+            recordService.addRecord(RecordsTypeEnum.SETTLE.getId(), monthStatistics.getBalance().multiply(BigDecimal.valueOf( -1)),
                     month + "月余额结转", DateUtils.monthBegin(new Date()), noteId);
-
         }
         // 标记为已处理
         note.setMonthStatisticsState(1);

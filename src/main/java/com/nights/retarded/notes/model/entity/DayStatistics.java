@@ -1,28 +1,17 @@
 package com.nights.retarded.notes.model.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.math.BigDecimal;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity(name = "DayStatistics")
 @Table(name = "notes_day_statistics")
 @Data
-public class DayStatistics implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class DayStatistics {
 
 	@Id
 	@GeneratedValue(generator="system-uuid")

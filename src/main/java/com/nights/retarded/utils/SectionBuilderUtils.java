@@ -4,7 +4,7 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
-public class SectionBuilderUtil {
+public class SectionBuilderUtils {
 
 	private static final String packageName = "com.nights.retarded";
 	private static final String url = "jdbc:mysql://arabiannightschat.top:3306/retarded?useSSL=false";
@@ -13,7 +13,7 @@ public class SectionBuilderUtil {
 	private static final String driverClassName = "com.mysql.jdbc.Driver";
 
 	// 项目路径
-	private static String path = SectionBuilderUtil.class.getResource("").getPath();
+	private static String path = SectionBuilderUtils.class.getResource("").getPath();
 
 	static {
 		path = path.substring(1).replaceAll("/target/classes", "/src/main/java").replaceAll("common/utils/", "");
@@ -52,7 +52,7 @@ public class SectionBuilderUtil {
 
 	}
 
-	private static void newService(String sectionName, String tablesName, String firstUpper, String secondUpper) throws IOException {
+	private static void newService(String sectionName, String firstUpper, String secondUpper) throws IOException {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(path + sectionName + "/service/"+firstUpper+"Service.java"));
 		bw.write("package " + packageName + ".service;");
 		bw.write("\n\n");bw.write("import java.util.List;");
@@ -240,7 +240,7 @@ public class SectionBuilderUtil {
 	private static void newTable(String sectionName, String tablesName, String firstUpper, String secondUpper) {
 		try {
 			newController(sectionName, firstUpper, secondUpper);
-			newService(sectionName, tablesName, firstUpper, secondUpper);
+			newService(sectionName, firstUpper, secondUpper);
 			newJpaDao(sectionName, firstUpper);
 			newModel(sectionName, tablesName, firstUpper);
 			System.out.println("------------------------------------------------------------------");

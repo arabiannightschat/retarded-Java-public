@@ -144,7 +144,7 @@ public class RecordServiceImpl implements RecordService{
         }
         recordVO.setIcon(recordsType.getIcon());
         if(record.getMoney() != null){
-            recordVO.setMoney(record.getMoney().setScale(2, BigDecimal.ROUND_UP));
+            recordVO.setMoney(record.getMoney().setScale(2, BigDecimal.ROUND_HALF_UP));
         }
         if(new Date().getTime() - record.getCreateDt().getTime() <= 1000*60*30){
             recordVO.setNew(true);
@@ -166,12 +166,12 @@ public class RecordServiceImpl implements RecordService{
         BigDecimal moneySign = money.multiply(BigDecimal.valueOf(type.getType() == 0 ? 1 : -1));
         Record record = packageRecord(recordTypeId, money, description, dt, type, note);
         recordDao.save(record);
-        editDayStatAndNote(dt, note, moneySign);
+        editDayStatisticsAndNote(dt, note, moneySign);
     }
 
     @Override
     public void delRecord(String recordId) {
-        Record record = recordDao.findById(recordId).orElse(null);
+        Record record = recordDao.findById(recordId).get();
         Note note = noteService.findById(record.getNoteId());
         // 如果结算记录被删掉，上月月统计修改为已清零
         if(RecordsTypeEnum.SETTLE.getId().equals(record.getTypeId())) {
@@ -182,11 +182,11 @@ public class RecordServiceImpl implements RecordService{
         }
         RecordsType type = recordsTypeService.findById(record.getTypeId());
         BigDecimal moneySign = record.getMoney().multiply(BigDecimal.valueOf(type.getType() == 0 ? -1 : 1));
-        editDayStatAndNote(record.getDt(), note, moneySign);
+        editDayStatisticsAndNote(record.getDt(), note, moneySign);
         recordDao.deleteById(recordId);
     }
 
-    private void editDayStatAndNote(Date dt, Note note, BigDecimal moneySign) {
+    private void editDayStatisticsAndNote(Date dt, Note note, BigDecimal moneySign) {
 
         // 更新日统计数据 ( 指定日期后的数据都会受到影响 )
         List<DayStatistics> dayStatisticsList = dayStatisticsService.findByNoteIdAndDtGreaterThanEqualOrderByDtAsc(note.getNoteId(), dt);
