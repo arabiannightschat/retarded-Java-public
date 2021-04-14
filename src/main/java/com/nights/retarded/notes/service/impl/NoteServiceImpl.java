@@ -206,6 +206,9 @@ public class NoteServiceImpl implements NoteService{
                         note.getDayBudget(), "冻结期间自动填充", date, note.getNoteId());
             }
         }
+        // 账本未操作天数置零
+        note.setDaysWithoutOperation(0);
+        noteDao.save(note);
     }
 
 }

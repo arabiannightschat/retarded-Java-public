@@ -60,7 +60,7 @@ public class MonthStatisticsServiceImpl implements MonthStatisticsService{
             monthStatistics.setIsClear(0);
             monthStatisticsDao.save(monthStatistics);
             int month = DateUtils.getMonth(DateUtils.monthBegin(monthStatistics.getDt()));
-            recordService.addRecord(RecordsTypeEnum.SETTLE.getId(), monthStatistics.getBalance().multiply(BigDecimal.valueOf( -1)),
+            recordService.addRecord(RecordsTypeEnum.SETTLE.getId(), monthStatistics.getBalance(),
                     month + "月余额结转", DateUtils.monthBegin(new Date()), noteId);
         }
         // 标记为已处理

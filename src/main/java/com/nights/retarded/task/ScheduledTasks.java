@@ -78,9 +78,9 @@ public class ScheduledTasks {
             List<DayStatistics> monthDaysRealList = dayStatisticsService.
                     findByNoteIdAndDtGreaterThanEqualAndDtLessThanEqual(note.getNoteId(), monthStatistics.getDt(), DateUtils.monthEnd(monthStatistics.getDt()));
             int monthDaysReal = monthDaysRealList.size();
-            monthStatistics.setAvgDaySpending(note.getBalance().divide(BigDecimal.valueOf(monthDaysReal),2, BigDecimal.ROUND_HALF_UP));
             monthStatistics.setMonthBudget(note.getMonthBudget());
             monthStatistics.setMonthSpending(monthStatistics.getMonthBudget().subtract(monthStatistics.getBalance()));
+            monthStatistics.setAvgDaySpending(monthStatistics.getMonthSpending().divide(BigDecimal.valueOf(monthDaysReal),2, BigDecimal.ROUND_HALF_UP));
             monthStatistics.setNoteId(note.getNoteId());
 
             // 默认在月结时，重置账本余额，这里是一个标识
