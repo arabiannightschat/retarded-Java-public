@@ -120,7 +120,14 @@ public class RecordServiceImpl implements RecordService{
             }
             RecordVO recordVO = recordToRecordVO(typesMap, record);
             recordsTemp.add(recordVO);
-            totalSpendingTemp = totalSpendingTemp.add(record.getMoney()).setScale(2, BigDecimal.ROUND_UP);
+            BigDecimal money = record.getMoney();
+            RecordsType recordsType = typesMap.get(record.getTypeId());
+            Integer type = recordsType.getType();
+            if(type == 1){
+                money = money.multiply(BigDecimal.valueOf(-1));
+            }
+            totalSpendingTemp = totalSpendingTemp.add(money)
+                    .setScale(2, BigDecimal.ROUND_UP);
         }
         if(list.size() != 0){
             recentRecords.setRecords(recordsTemp);
@@ -135,7 +142,7 @@ public class RecordServiceImpl implements RecordService{
         RecordsType recordsType = typesMap.get(record.getTypeId());
         if(recordsType == null) {
             recordsType = recordsTypeService.findById(record.getTypeId());
-            typesMap.put("record.getTypeId()",recordsType);
+            typesMap.put(record.getTypeId(),recordsType);
         }
         if(StringUtils.isNotEmpty(record.getDescription())){
             recordVO.setDescription(record.getDescription());
